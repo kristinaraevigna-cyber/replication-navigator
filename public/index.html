@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Replication Navigator</title>
+  <meta name="description" content="An evidence-grounded, step-by-step guide and AI coach for planning rigorous replication studies.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%23245c73'/><path d='M16 6l4 10-4 10-4-10z' fill='white'/></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <button class="icon-btn only-mobile" id="navToggle" aria-label="Show stages">☰</button>
+    <div class="brand">
+      <span class="logo" aria-hidden="true">◈</span>
+      <div>
+        <strong>Replication Navigator</strong>
+        <small>Evidence-grounded replication planning</small>
+      </div>
+    </div>
+    <div class="progress-wrap" title="Checklist progress">
+      <div class="progress"><div class="bar" id="progressBar"></div></div>
+      <span id="progressText">0%</span>
+    </div>
+    <nav class="top-actions">
+      <button class="btn ghost" id="evidenceBtn">Evidence base</button>
+      <button class="btn ghost" id="exportBtn">Export plan</button>
+      <button class="btn ghost" id="settingsBtn" aria-label="Settings">Settings</button>
+    </nav>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <ol class="stage-list" id="stageList"></ol>
+      <div class="side-extra">
+        <button class="side-link" data-view="recipe">Replication Recipe (36 Qs)</button>
+        <button class="side-link" data-view="evidence">Evidence base</button>
+        <button class="side-link" data-view="survey">Feedback survey</button>
+        <button class="side-link" data-view="about">About &amp; method</button>
+      </div>
+    </aside>
+
+    <main class="main" id="main" tabindex="-1"></main>
+
+    <section class="coach" id="coach" aria-label="AI coach">
+      <div class="coach-head">
+        <div>
+          <strong>AI coach</strong>
+          <small id="coachStage">Grounded in the evidence base</small>
+        </div>
+        <button class="icon-btn only-mobile" id="coachClose" aria-label="Close coach">✕</button>
+      </div>
+      <div class="modes" id="modes">
+        <button data-mode="explain">Explain this stage</button>
+        <button data-mode="review">Review my worksheet</button>
+        <button data-mode="missing">What am I missing?</button>
+        <button data-mode="challenge">Challenge me</button>
+        <button data-mode="email" id="emailMode" hidden>Draft author email</button>
+      </div>
+      <div class="chat" id="chat" aria-live="polite"></div>
+      <form class="composer" id="composer">
+        <textarea id="prompt" rows="2" placeholder="Ask the coach about this stage…" aria-label="Message the coach"></textarea>
+        <button class="btn primary" type="submit" id="sendBtn">Send</button>
+      </form>
+      <p class="disclaimer">The coach cites evidence cards like <span class="cite demo">[isager2021-02]</span>. Click one to check the source. It can still be wrong, so verify key decisions with an expert.</p>
+    </section>
+  </div>
+
+  <button class="fab only-mobile" id="coachOpen">Ask the coach</button>
+
+  <!-- Card viewer -->
+  <dialog id="cardDialog" class="dialog">
+    <form method="dialog" class="dialog-inner">
+      <div id="cardBody"></div>
+      <div class="dialog-actions">
+        <button class="btn ghost" type="button" id="flagCitation">Flag: doesn't support the coach's claim</button>
+        <button class="btn primary" value="close">Close</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Onboarding / consent -->
+  <dialog id="welcome" class="dialog">
+    <form class="dialog-inner" id="welcomeForm">
+      <h2>Welcome to Replication Navigator</h2>
+      <p>This tool walks you through planning a replication in 10 stages. Each stage has a worksheet, a checklist, resources and an AI coach. The coach draws only on a curated evidence base of nine key sources on replication, and every recommendation cites the card it comes from.</p>
+      <label>Team or participant code <small>(pseudonymous, e.g. T3-P2; don't use your name)</small>
+        <input id="participantInput" autocomplete="off" maxlength="40">
+      </label>
+      <label id="codeRow">Workshop access code
+        <input id="codeInput" autocomplete="off">
+      </label>
+      <fieldset class="consent">
+        <legend>Research participation (optional)</legend>
+        <p>We are evaluating this tool for a methods paper. If you agree, we log your interactions with your pseudonymous code: coach messages, checklist ticks, ratings and survey answers. Your worksheet answers are logged only when you export your plan. You can use the tool fully without agreeing.</p>
+        <label class="check"><input type="radio" name="consent" value="yes"> I agree to my pseudonymous usage data being logged for research.</label>
+        <label class="check"><input type="radio" name="consent" value="no" checked> I do not agree. Please don't log my data.</label>
+      </fieldset>
+      <p class="error" id="welcomeError"></p>
+      <div class="dialog-actions"><button class="btn primary" type="submit">Start</button></div>
+    </form>
+  </dialog>
+
+  <!-- Settings -->
+  <dialog id="settings" class="dialog">
+    <form method="dialog" class="dialog-inner">
+      <h2>Settings</h2>
+      <label>Participant code <input id="setParticipant" maxlength="40"></label>
+      <label>Workshop access code <input id="setCode"></label>
+      <label id="byoRow">Your own Anthropic API key <small>(optional; kept in this browser tab only)</small>
+        <input id="setKey" type="password" autocomplete="off" placeholder="sk-ant-…">
+      </label>
+      <label class="check"><input type="checkbox" id="setConsent"> Log my pseudonymous usage for research</label>
+      <hr>
+      <div class="row">
+        <button class="btn ghost" type="button" id="importBtn">Import plan (.json)</button>
+        <input type="file" id="importFile" accept="application/json" hidden>
+        <button class="btn danger" type="button" id="resetBtn">Start over</button>
+      </div>
+      <div class="dialog-actions">
+        <button class="btn primary" value="save" id="saveSettings">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>

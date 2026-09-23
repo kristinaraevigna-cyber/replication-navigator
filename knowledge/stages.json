@@ -1,0 +1,297 @@
+[
+  {
+    "id": "target",
+    "n": 1,
+    "title": "Choose & justify the target",
+    "goal": "Pick one clearly identified study and the specific claim you will test, and write down why it is worth replicating now.",
+    "questions": [
+      "Which study, and which exact claim or effect, will you test?",
+      "How valuable is it to know whether this claim is true?",
+      "How uncertain is the current evidence?",
+      "Is it feasible with your time, money, participants and skills?"
+    ],
+    "fields": [
+      { "id": "citation", "label": "Target study (full reference + DOI)", "type": "text" },
+      { "id": "claim", "label": "The specific claim / effect you will test", "type": "textarea", "cards": ["obenauer2024-06", "forrt2025-09"] },
+      { "id": "existing", "label": "Existing reproductions / replications you found (e.g. in FReD)", "type": "textarea", "cards": ["forrt2025-15", "isager2021-07"] },
+      { "id": "value", "label": "Value: why knowing the truth of this claim matters (citations, theory, policy)", "type": "textarea", "rating": true, "cards": ["isager2021-04", "isager2021-14", "obenauer2024-08"] },
+      { "id": "uncertainty", "label": "Uncertainty: why the current evidence is inconclusive (sample size, prior replications, design)", "type": "textarea", "rating": true, "cards": ["isager2021-05", "isager2021-16", "forrt2025-11"] },
+      { "id": "feasibility", "label": "Feasibility & costs (incl. non-monetary)", "type": "textarea", "rating": true, "cards": ["isager2021-08", "isager2021-09", "forrt2025-17"] },
+      { "id": "bias", "label": "Your own potential biases toward a particular outcome", "type": "textarea", "cards": ["forrt2025-16"] },
+      { "id": "decision", "label": "Decision & rationale (what would each possible outcome teach us?)", "type": "textarea", "cards": ["obenauer2024-12", "isager2021-28"] }
+    ],
+    "checklist": [
+      { "text": "One target study and one specific claim are named", "cards": ["obenauer2024-06"] },
+      { "text": "Searched for existing reproductions/replications of this claim", "cards": ["forrt2025-15"] },
+      { "text": "Value and uncertainty are both argued with evidence", "cards": ["isager2021-02", "forrt2025-10"] },
+      { "text": "Costs and feasibility are realistically assessed", "cards": ["isager2021-10"] },
+      { "text": "Checked that the original design allows an informative replication", "cards": ["isager2021-13", "flake2023-09"] },
+      { "text": "Selection rationale is written down transparently", "cards": ["forrt2025-133", "isager2021-22"] }
+    ],
+    "resources": [
+      { "label": "FORRT Replication Database (FReD) explorer", "url": "https://forrt-replications.shinyapps.io/fred_explorer/" },
+      { "label": "FORRT Replication Hub", "url": "https://forrt.org/replication-hub" },
+      { "label": "Isager et al. (2023) decision model", "url": "https://doi.org/10.1037/met0000438" }
+    ],
+    "expert_review": true
+  },
+  {
+    "id": "aim",
+    "n": 2,
+    "title": "Define aim & replication type",
+    "goal": "State the purpose of your study, whether it is a reproduction or replication, how close it is to the original, and which replication goal your analysis will serve.",
+    "questions": [
+      "What do you want to learn: whether the effect exists, how large it is, whether it generalises?",
+      "Close (direct) or conceptual (constructive) replication, and why?",
+      "How does this connect to theory?"
+    ],
+    "fields": [
+      { "id": "purpose", "label": "Purpose of the replication", "type": "select", "options": ["Verify the original finding holds", "Test theory with stronger methodology", "Test boundary conditions / generalisability", "Advance a methodological precedent", "Training / learning the research process", "Other"], "cards": ["obenauer2024-03", "obenauer2024-04"] },
+      { "id": "kind", "label": "Reproduction or replication?", "type": "select", "options": ["Reproduction (same data)", "Replication (new data)", "Both: reproduce first, then replicate"], "cards": ["forrt2025-01", "forrt2025-24"] },
+      { "id": "closeness", "label": "Type of replication", "type": "select", "options": ["Close / direct / literal", "Conceptual / constructive", "Replication + extension"], "cards": ["forrt2025-05", "forrt2025-07", "obenauer2024-15", "bonett2021-24"] },
+      { "id": "goal", "label": "Replication goal (Anderson & Maxwell, 2016)", "type": "select", "options": ["1. Does the effect exist (same direction)?", "2. Is the effect absent / negligible?", "3. How large is the effect (precise estimate)?", "4. Combine with the original (pooled estimate)", "5. Is the replication clearly inconsistent with the original?", "6. Is the replication clearly consistent with the original?"], "cards": ["anderson2016-01", "anderson2016-02"] },
+      { "id": "theory", "label": "Link to theory: what the result would mean for the theory", "type": "textarea", "cards": ["irvine2021-08", "forrt2025-03", "obenauer2024-04"] }
+    ],
+    "checklist": [
+      { "text": "Purpose is stated before choosing design details", "cards": ["obenauer2024-03"] },
+      { "text": "Replication type is named explicitly and justified", "cards": ["obenauer2024-28", "forrt2025-134"] },
+      { "text": "A replication goal is chosen (it determines the analysis in stage 9)", "cards": ["anderson2016-03"] },
+      { "text": "If conceptual/extension: a close replication is included first or justified", "cards": ["forrt2025-13", "forrt2025-24"] },
+      { "text": "Checked that the design actually speaks to the original claim", "cards": ["forrt2025-06"] }
+    ],
+    "resources": [
+      { "label": "FORRT Handbook — types of replication", "url": "https://forrt.org/replication_handbook" }
+    ]
+  },
+  {
+    "id": "materials",
+    "n": 3,
+    "title": "Gather materials & contact authors",
+    "goal": "Collect everything needed to rerun the original (materials, measures, procedure, data, code) and contact the original authors professionally.",
+    "questions": [
+      "Which materials are public, which are missing?",
+      "Have you written to the original authors?",
+      "Have you read post-publication discussion of the study?"
+    ],
+    "fields": [
+      { "id": "inventory", "label": "Materials inventory", "type": "checks", "options": ["Stimuli / manipulations", "Measures / items", "Procedure / protocol", "Raw data", "Analysis code / syntax", "Original preregistration", "Supplementary materials"], "cards": ["forrt2025-135", "forrt2025-25"] },
+      { "id": "missing", "label": "What is missing, and how you will fill the gap", "type": "textarea", "cards": ["brandt2014-07", "schwab2023-06", "forrt2025-40"] },
+      { "id": "contact", "label": "Author contact log (date, who, what was asked, response)", "type": "textarea", "cards": ["forrt2025-26", "brandt2014-06", "forrt2025-143"] },
+      { "id": "postpub", "label": "Post-publication discussion found (commentaries, PubPeer, errata)", "type": "textarea", "cards": ["forrt2025-18"] }
+    ],
+    "checklist": [
+      { "text": "All original materials located or requested", "cards": ["forrt2025-135"] },
+      { "text": "Original authors contacted (use the email template)", "cards": ["forrt2025-143", "brandt2014-06"] },
+      { "text": "Gaps in reported methods are documented, with how you filled them", "cards": ["schwab2023-07", "flake2023-07"] },
+      { "text": "Considered inviting authors to comment on your paradigm or an adversarial collaboration", "cards": ["forrt2025-144", "forrt2025-102", "forrt2025-101"] }
+    ],
+    "resources": [
+      { "label": "PubPeer (post-publication discussion)", "url": "https://pubpeer.com/" },
+      { "label": "Open Science Framework", "url": "https://osf.io/" }
+    ],
+    "templates": ["forrt2025-143", "forrt2025-144"]
+  },
+  {
+    "id": "reproduce",
+    "n": 4,
+    "title": "Reproduce before you replicate",
+    "goal": "Where data are available, rerun the original analysis on the original data to check the reported result before collecting new data.",
+    "questions": [
+      "Are data and code available?",
+      "Do you get the same numbers?",
+      "Is the result robust to small, reasonable analytic changes?"
+    ],
+    "fields": [
+      { "id": "availability", "label": "Data / code availability", "type": "select", "options": ["Data and code available", "Data only", "Summary statistics only", "Nothing available"], "cards": ["forrt2025-25", "forrt2025-23"] },
+      { "id": "claimrep", "label": "Which reported result you will reproduce", "type": "textarea", "cards": ["forrt2025-27"] },
+      { "id": "environment", "label": "Computing environment (software, versions, seeds)", "type": "textarea", "cards": ["forrt2025-29", "forrt2025-20"] },
+      { "id": "result", "label": "Reproduction result and any discrepancies", "type": "textarea", "cards": ["forrt2025-21", "forrt2025-22"] }
+    ],
+    "checklist": [
+      { "text": "Attempted a reproduction (or explained why not possible)", "cards": ["forrt2025-19", "forrt2025-136", "obenauer2024-16"] },
+      { "text": "Checked reported statistics for internal consistency", "cards": ["forrt2025-23"] },
+      { "text": "Documented software versions and seeds", "cards": ["forrt2025-29"] },
+      { "text": "Ran small, pre-specified robustness checks", "cards": ["forrt2025-22"] }
+    ],
+    "resources": [
+      { "label": "BITSS Guide for Advancing Computational Reproducibility (ACRE)", "url": "https://bitss.github.io/ACRE/" },
+      { "label": "Institute for Replication", "url": "https://i4replication.org/" },
+      { "label": "CODECHECK register", "url": "https://codecheck.org.uk/register/" }
+    ]
+  },
+  {
+    "id": "measures",
+    "n": 5,
+    "title": "Check measurement & construct validity",
+    "goal": "Make sure the measures in the original and in your replication produce valid scores. Without that, a success or failure is hard to interpret.",
+    "questions": [
+      "What validity evidence exists for the original measures?",
+      "Will you translate or adapt anything?",
+      "How will you check the measure works in your sample?"
+    ],
+    "fields": [
+      { "id": "measures", "label": "Key measures (construct → instrument → items)", "type": "textarea", "cards": ["flake2023-02"] },
+      { "id": "validity", "label": "Validity evidence in the original (beyond Cronbach's alpha)", "type": "textarea", "cards": ["flake2023-03", "flake2023-05", "flake2023-08"] },
+      { "id": "adaptation", "label": "Translation / cultural adaptation plan", "type": "textarea", "cards": ["flake2023-19", "brandt2014-08", "forrt2025-42"] },
+      { "id": "checks", "label": "Validity checks you will run (factor structure, reliability, invariance, manipulation checks)", "type": "textarea", "cards": ["flake2023-11", "flake2023-22", "forrt2025-44"] }
+    ],
+    "checklist": [
+      { "text": "Validity evidence for each primary measure is summarised", "cards": ["flake2023-08", "flake2023-12"] },
+      { "text": "Planned minimum validity checks in the new data", "cards": ["flake2023-11"] },
+      { "text": "Translated/adapted measures have an equivalence plan", "cards": ["flake2023-21", "forrt2025-42"] },
+      { "text": "Decided what you will do if the measure fails", "cards": ["flake2023-23", "flake2023-18"] }
+    ],
+    "resources": [
+      { "label": "Flake et al. (2022) review materials (OSF)", "url": "https://osf.io/k3qdn/" }
+    ],
+    "expert_review": false
+  },
+  {
+    "id": "sample",
+    "n": 6,
+    "title": "Plan design & sample size",
+    "goal": "Choose a sample-size strategy that fits your replication goal. Don't simply reuse the original N.",
+    "questions": [
+      "What is the original effect size and its confidence interval?",
+      "Which planning approach fits your goal?",
+      "What is the smallest effect size of interest?"
+    ],
+    "fields": [
+      { "id": "orig", "label": "Original effect size, CI and N", "type": "textarea", "cards": ["bonett2021-05", "anderson2016-14"] },
+      { "id": "approach", "label": "Sample-size approach", "type": "select", "options": ["Power for a conservative effect size", "Small telescopes (2.5 × original N)", "Equivalence test with a smallest effect size of interest (SESOI)", "Precision / AIPE (CI width)", "Bayesian planning", "Multilab / pooled"], "cards": ["forrt2025-36", "forrt2025-37", "forrt2025-38", "brandt2014-12", "anderson2016-15"] },
+      { "id": "sesoi", "label": "Smallest effect size of interest & justification (if relevant)", "type": "textarea", "cards": ["forrt2025-37", "bonett2021-08"] },
+      { "id": "n", "label": "Planned N and full justification", "type": "textarea", "cards": ["obenauer2024-19", "bonett2021-19"] }
+    ],
+    "checklist": [
+      { "text": "Did not simply reuse the original sample size", "cards": ["forrt2025-34"] },
+      { "text": "Accounted for inflated original effect sizes", "cards": ["anderson2016-13", "bonett2021-19"] },
+      { "text": "Approach matches the replication goal from stage 2", "cards": ["anderson2016-02"] },
+      { "text": "If aiming to show absence of an effect: sample is large enough for equivalence", "cards": ["bonett2021-13", "anderson2016-12"] },
+      { "text": "Did not derive effect sizes from a small pilot", "cards": ["forrt2025-45"] }
+    ],
+    "resources": [
+      { "label": "G*Power", "url": "https://www.psychologie.hhu.de/arbeitsgruppen/allgemeine-psychologie-und-arbeitspsychologie/gpower" },
+      { "label": "TOSTER (equivalence tests, R)", "url": "https://cran.r-project.org/package=TOSTER" },
+      { "label": "MBESS (AIPE, R)", "url": "https://cran.r-project.org/package=MBESS" }
+    ],
+    "expert_review": true
+  },
+  {
+    "id": "differences",
+    "n": 7,
+    "title": "Document differences from the original",
+    "goal": "List every difference between your study and the original, rate each one, and think ahead about which differences could change the result.",
+    "questions": [
+      "What differs: population, setting, language, time, materials, procedure?",
+      "Which differences might plausibly matter, and why?",
+      "Can you test any of them?"
+    ],
+    "fields": [
+      { "id": "table", "label": "Differences (component → Exact / Close / Different → why)", "type": "textarea", "cards": ["brandt2014-13"] },
+      { "id": "influential", "label": "Differences that could plausibly change the result, and how you'll check them", "type": "textarea", "cards": ["brandt2014-14", "irvine2021-06", "irvine2021-07"] },
+      { "id": "updates", "label": "Deliberate updates or improvements, and their justification", "type": "textarea", "cards": ["brandt2014-15", "forrt2025-41", "schwab2023-04"] },
+      { "id": "samplecomp", "label": "How your sample compares with the original", "type": "textarea", "cards": ["obenauer2024-32"] }
+    ],
+    "checklist": [
+      { "text": "Every design component rated Exact / Close / Different", "cards": ["brandt2014-13"] },
+      { "text": "Plausibly influential differences identified in advance", "cards": ["brandt2014-14"] },
+      { "text": "Changes are 'as close as possible, as updated as necessary'", "cards": ["forrt2025-137", "forrt2025-121"] },
+      { "text": "Measurement differences considered (not just procedure)", "cards": ["flake2023-15", "flake2023-20"] }
+    ],
+    "resources": [
+      { "label": "Replication Recipe template (OSF)", "url": "https://osf.io/4jd46/" }
+    ]
+  },
+  {
+    "id": "prereg",
+    "n": 8,
+    "title": "Preregister",
+    "goal": "Fix hypotheses, design, exclusions, analysis and success criteria before seeing the data, or submit as a Registered Report.",
+    "questions": [
+      "Where will you preregister?",
+      "Is a Registered Report possible?",
+      "What will you do if things go wrong (contingencies)?"
+    ],
+    "fields": [
+      { "id": "route", "label": "Route", "type": "select", "options": ["Preregistration (OSF)", "Preregistration (AsPredicted)", "Registered Report (Stage 1)", "PCI Registered Reports", "Not yet decided"], "cards": ["forrt2025-32", "obenauer2024-22"] },
+      { "id": "hypotheses", "label": "Hypotheses (tied to the original claim)", "type": "textarea", "cards": ["obenauer2024-13"] },
+      { "id": "exclusions", "label": "Exclusion rules", "type": "textarea", "cards": ["forrt2025-108", "obenauer2024-21"] },
+      { "id": "contingencies", "label": "Contingency plans", "type": "textarea", "cards": ["obenauer2024-20"] },
+      { "id": "link", "label": "Preregistration link (when done)", "type": "text" }
+    ],
+    "checklist": [
+      { "text": "Analysis plan and success criteria are preregistered", "cards": ["forrt2025-31", "forrt2025-138", "brandt2014-16"] },
+      { "text": "Primary effect(s) and how they are aggregated are specified", "cards": ["forrt2025-111"] },
+      { "text": "Exclusion rules set in advance", "cards": ["forrt2025-108"] },
+      { "text": "Region of equivalence set before data collection (if used)", "cards": ["anderson2016-09"] },
+      { "text": "Plan for reporting deviations", "cards": ["forrt2025-33"] }
+    ],
+    "resources": [
+      { "label": "OSF Registries", "url": "https://osf.io/registries" },
+      { "label": "AsPredicted", "url": "https://aspredicted.org/" },
+      { "label": "PCI Registered Reports", "url": "https://rr.peercommunityin.org" }
+    ]
+  },
+  {
+    "id": "analysis",
+    "n": 9,
+    "title": "Analysis & success criteria",
+    "goal": "Choose analyses that match your replication goal and define success and failure before you analyse the data.",
+    "questions": [
+      "Which analysis matches your goal from stage 2?",
+      "What counts as success, failure, and inconclusive?",
+      "Will you run the original analysis, an updated one, or both?"
+    ],
+    "fields": [
+      { "id": "primary", "label": "Primary analysis (matched to your replication goal)", "type": "textarea", "cards": ["anderson2016-02", "anderson2016-05", "forrt2025-103"] },
+      { "id": "criteria", "label": "Success / failure / inconclusive criteria", "type": "textarea", "cards": ["forrt2025-139", "forrt2025-112", "bonett2021-06", "irvine2021-18"] },
+      { "id": "comparison", "label": "How you will compare with the original (e.g. CI for the difference, equivalence)", "type": "textarea", "cards": ["anderson2016-21", "anderson2016-24", "forrt2025-109", "anderson2016-22"] },
+      { "id": "secondary", "label": "Secondary / updated analyses", "type": "textarea", "cards": ["forrt2025-106", "forrt2025-43"] }
+    ],
+    "checklist": [
+      { "text": "Success criteria are defined before analysis", "cards": ["forrt2025-139", "brandt2014-18"] },
+      { "text": "The analysis matches the chosen replication goal", "cards": ["anderson2016-02"] },
+      { "text": "Not relying only on 'significant vs. non-significant'", "cards": ["bonett2021-01", "anderson2016-07", "brandt2014-19"] },
+      { "text": "Not comparing p values or eyeballing CI overlap", "cards": ["anderson2016-22", "bonett2021-02"] },
+      { "text": "Plan for careless responding and failed manipulation checks", "cards": ["forrt2025-104", "forrt2025-105"] }
+    ],
+    "resources": [
+      { "label": "TOSTER (R)", "url": "https://cran.r-project.org/package=TOSTER" },
+      { "label": "APA JARS — quantitative replication reporting table", "url": "https://apastyle.apa.org/jars/quant-table-6.pdf" }
+    ],
+    "expert_review": true
+  },
+  {
+    "id": "report",
+    "n": 10,
+    "title": "Interpret, report & publish",
+    "goal": "Interpret the results fairly, report everything openly, invite the original authors to comment, and find the right outlet.",
+    "questions": [
+      "What does the evidence, taken as a whole, say?",
+      "Which explanations for divergence are plausible, and testable?",
+      "How will you frame the paper constructively?"
+    ],
+    "fields": [
+      { "id": "verdict", "label": "Outcome in balanced language (vs. your pre-set criteria)", "type": "textarea", "cards": ["forrt2025-125", "brandt2014-20", "anderson2016-30", "bonett2021-14"] },
+      { "id": "divergence", "label": "Possible reasons for divergence (validity, differences, moderators)", "type": "textarea", "cards": ["forrt2025-117", "forrt2025-119", "brandt2014-22", "flake2023-14"] },
+      { "id": "framing", "label": "Contribution framing (building, not attacking)", "type": "textarea", "cards": ["obenauer2024-25", "obenauer2024-24", "schwab2023-17"] },
+      { "id": "sharing", "label": "Open materials, data and code; where results will be logged", "type": "textarea", "cards": ["brandt2014-23", "forrt2025-126", "obenauer2024-31"] },
+      { "id": "outlet", "label": "Target outlet(s) and preprint plan", "type": "textarea", "cards": ["forrt2025-128", "forrt2025-129", "schwab2023-22"] }
+    ],
+    "checklist": [
+      { "text": "Uses balanced, descriptive language about the outcome", "cards": ["forrt2025-140", "obenauer2024-34"] },
+      { "text": "Evaluates reasons for divergence carefully", "cards": ["forrt2025-141"] },
+      { "text": "Reports comprehensively and openly (materials, data, code)", "cards": ["forrt2025-142", "forrt2025-124"] },
+      { "text": "Original authors invited to comment on results", "cards": ["forrt2025-123", "forrt2025-145"] },
+      { "text": "Results logged in FReD", "cards": ["forrt2025-126"] },
+      { "text": "Does not treat one replication as conclusive", "cards": ["forrt2025-120", "irvine2021-23"] }
+    ],
+    "resources": [
+      { "label": "Submit a replication to FReD", "url": "https://t1p.de/fred_submit" },
+      { "label": "Journal of Management Scientific Reports", "url": "https://journals.sagepub.com/home/MSR" },
+      { "label": "Peer Community In (preprint review)", "url": "https://peercommunityin.org/current-pcis" },
+      { "label": "ARIM — How-to resources", "url": "https://www.arimweb.org/resources/how-to" }
+    ],
+    "templates": ["forrt2025-145"]
+  }
+]

@@ -1,0 +1,317 @@
+[
+ {
+  "id": "isager2021-07",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "Traceability only: the classroom (Stroop) example is on p5, not p10; the quote shows the 'uncertain claims not worth knowing' half of the sentence, not the 'already quite certain' half that the card is about.",
+  "suggested_fix": ""
+ },
+ {
+  "id": "obenauer2024-34",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "isager2021-14",
+  "fidelity": 1,
+  "stage_ok": true,
+  "problem": "Source offers these as indicators that 'might' be used, not as 'commonly used' proxies. It also leaves out the authors' caveat (fn 7, p12) that impact metrics are only valid insofar as valuable claims get cited more, and that citation validity varies by field.",
+  "suggested_fix": "Isager et al. suggest possible quantitative indicators of a claim's value, such as citation counts, Altmetric Attention scores, journal impact indicators, best-paper awards, citation in textbooks, clinical guidelines or policy, and reviewer ratings of importance. These are only proxies: they are valid only to the extent that valuable claims tend to be cited more, and their validity differs across fields (field-weighted citations are often preferable). Choose indicators suited to your field and record them for every candidate."
+ },
+ {
+  "id": "obenauer2024-08",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "schwab2023-13",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "brandt2014-08",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "brandt2014-05",
+  "fidelity": 1,
+  "stage_ok": true,
+  "problem": "'Say which you did' is not in the source. The advice to ask the authors or make an informed guess is on p2 (and is given for unclear methods such as country), not on the cited p3.",
+  "suggested_fix": "Recipe Questions 3–9 ask you to write down the original effect size, its confidence interval, the original sample size, where the study was run (lab, field, online), the country or region, the kind of sample (e.g., students, MTurk, representative), and the mode of administration (paper, computer, other). Brandt et al. note (p. 218) that when such methodological details are unclear, you may need to ask the original authors or make an informed guess."
+ },
+ {
+  "id": "obenauer2024-10",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "isager2021-19",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "schwab2023-27",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "brandt2014-06",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "Traceability only: the remark that the Recipe is easier with a cooperative original author is on p5, not p3.",
+  "suggested_fix": ""
+ },
+ {
+  "id": "forrt2025-104",
+  "fidelity": 1,
+  "stage_ok": true,
+  "problem": "Leaves out the source's next point: generally do NOT exclude participants on this basis. Instead, confirm that non-compliance rates are low and report robustness to excluding them. Without this, the card could prompt post-hoc exclusions.",
+  "suggested_fix": "Even when you follow the original analysis, inspect your raw data for distributional anomalies that suggest inattention, guessing or speeding. Check theory-agnostic manipulation or condition checks (e.g., were people faster in a speed-focused condition?), attention checks and control trials. The handbook advises generally not removing participants from the main analysis on this basis: confirm that non-compliance rates are acceptably low and report robustness to excluding them."
+ },
+ {
+  "id": "isager2021-04",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "anderson2016-14",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "forrt2025-128",
+  "fidelity": 1,
+  "stage_ok": true,
+  "problem": "'Reject replications for lack of novelty' adds a reason the source does not give. The source says only that many journals are not (yet) interested in replications.",
+  "suggested_fix": "The handbook recommends posting your report as a preprint so it is open access, visible, citable and open to comment, though preprints are usually not peer-reviewed. Many journals are not (yet) interested in replications, so consider journals dedicated to replications, or submit your preprint to a Peer Community In (PCI) community for peer review; several journals are PCI-friendly."
+ },
+ {
+  "id": "forrt2025-102",
+  "fidelity": 2,
+  "stage_ok": false,
+  "problem": "Stage: red teams critique the analysis plan and adversarial collaborations co-design the study, so 'prereg' (or 'analysis') fits better than 'materials'.",
+  "suggested_fix": ""
+ },
+ {
+  "id": "obenauer2024-23",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "forrt2025-22",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "schwab2023-17",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "flake2023-03",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "schwab2023-28",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "forrt2025-136",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "Schema: kind 'checklist' is not an allowed kind (use 'template' or 'how-to').",
+  "suggested_fix": ""
+ },
+ {
+  "id": "schwab2023-32",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "Traceability only: Project TIER and FORRT appear in Table 1 (pp10-11), not in the p9 text.",
+  "suggested_fix": ""
+ },
+ {
+  "id": "forrt2025-08",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "obenauer2024-18",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "forrt2025-33",
+  "fidelity": 2,
+  "stage_ok": false,
+  "problem": "Stage: this is about deviations from one's own preregistration, not differences from the original study; 'prereg' (or 'report') fits better than 'differences'.",
+  "suggested_fix": ""
+ },
+ {
+  "id": "forrt2025-31",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "forrt2025-19",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "bonett2021-08",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "schwab2023-20",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "forrt2025-16",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "isager2021-13",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "anderson2016-26",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "isager2021-01",
+  "fidelity": 1,
+  "stage_ok": true,
+  "problem": "The action's 'at least three candidates' is an invented threshold. The source says only that replicators choose among a set of candidates.",
+  "suggested_fix": "Replicators almost never have the time or money to replicate everything they find interesting, so target selection is a choice among a set of candidate claims. Treat it as an explicit decision: compare several candidate claims rather than committing to the first study that comes to mind. (Action: list your candidate claims and compare them before committing to one target.)"
+ },
+ {
+  "id": "schwab2023-15",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "brandt2014-11",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "obenauer2024-13",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "bonett2021-04",
+  "fidelity": 1,
+  "stage_ok": true,
+  "problem": "Presented as a universal rule for replications. In the source it is part of Bonett's definition of a 'comparable follow-up study' (direct replication), which his CI-based replication criteria require. It is not a rule for replication in general (e.g., conceptual replications).",
+  "suggested_fix": "For a direct ('comparable') replication whose results you will compare with the original using Bonett's confidence-interval criteria, you should use the original measurement scales. Bonett says this requirement can be cautiously relaxed only if both studies measure exactly the same construct, the two scales are linearly related, and a standardized effect size is used."
+ },
+ {
+  "id": "anderson2016-09",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "obenauer2024-03",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "forrt2025-03",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "Traceability only: the deductive-view point and the season/tea/colour example are on p15; p14 has only the opening sentence.",
+  "suggested_fix": ""
+ },
+ {
+  "id": "forrt2025-44",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "isager2021-10",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "anderson2016-01",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ },
+ {
+  "id": "flake2023-09",
+  "fidelity": 2,
+  "stage_ok": true,
+  "problem": "",
+  "suggested_fix": ""
+ }
+]

@@ -1,0 +1,218 @@
+[
+  {
+    "n": 1,
+    "section": "The Nature of the Effect",
+    "text": "Verbal description of the effect I am trying to replicate:",
+    "pdf_page": 3
+  },
+  {
+    "n": 2,
+    "section": "The Nature of the Effect",
+    "text": "It is important to replicate this effect because:",
+    "pdf_page": 3
+  },
+  {
+    "n": 3,
+    "section": "The Nature of the Effect",
+    "text": "The effect size of the effect I am trying to replicate is:",
+    "pdf_page": 3
+  },
+  {
+    "n": 4,
+    "section": "The Nature of the Effect",
+    "text": "The confidence interval of the original effect is:",
+    "pdf_page": 3
+  },
+  {
+    "n": 5,
+    "section": "The Nature of the Effect",
+    "text": "The sample size of the original effect is:",
+    "pdf_page": 3
+  },
+  {
+    "n": 6,
+    "section": "The Nature of the Effect",
+    "text": "Where was the original study conducted? (e.g., lab, in the field, online)",
+    "pdf_page": 3
+  },
+  {
+    "n": 7,
+    "section": "The Nature of the Effect",
+    "text": "What country/region was the original study conducted in?",
+    "pdf_page": 3
+  },
+  {
+    "n": 8,
+    "section": "The Nature of the Effect",
+    "text": "What kind of sample did the original study use? (e.g., student, Mturk, representative)",
+    "pdf_page": 3
+  },
+  {
+    "n": 9,
+    "section": "The Nature of the Effect",
+    "text": "Was the original study conducted with paper-and-pencil surveys, on a computer, or something else?",
+    "pdf_page": 3
+  },
+  {
+    "n": 10,
+    "section": "Designing the Replication Study",
+    "text": "Are the original materials for the study available from the author? a. If not, are the original materials for the study available elsewhere (e.g., previously published scales)? b. If the original materials are not available from the author or elsewhere, how were the materials created for the replication attempt?",
+    "pdf_page": 3
+  },
+  {
+    "n": 11,
+    "section": "Designing the Replication Study",
+    "text": "I know that assumptions (e.g., about the meaning of the stimuli) in the original study will also hold in my replication because:",
+    "pdf_page": 3
+  },
+  {
+    "n": 12,
+    "section": "Designing the Replication Study",
+    "text": "Location of the experimenter during data collection:",
+    "pdf_page": 3
+  },
+  {
+    "n": 13,
+    "section": "Designing the Replication Study",
+    "text": "Experimenter knowledge of participant experimental condition:",
+    "pdf_page": 3
+  },
+  {
+    "n": 14,
+    "section": "Designing the Replication Study",
+    "text": "Experimenter knowledge of overall hypotheses:",
+    "pdf_page": 3
+  },
+  {
+    "n": 15,
+    "section": "Designing the Replication Study",
+    "text": "My target sample size is:",
+    "pdf_page": 3
+  },
+  {
+    "n": 16,
+    "section": "Designing the Replication Study",
+    "text": "The rationale for my sample size is:",
+    "pdf_page": 3
+  },
+  {
+    "n": 17,
+    "section": "Documenting Differences between the Original and Replication Study",
+    "text": "The similarities/differences in the instructions are: [Exact | Close | Different]",
+    "pdf_page": 3
+  },
+  {
+    "n": 18,
+    "section": "Documenting Differences between the Original and Replication Study",
+    "text": "The similarities/differences in the measures are: [Exact | Close | Different]",
+    "pdf_page": 3
+  },
+  {
+    "n": 19,
+    "section": "Documenting Differences between the Original and Replication Study",
+    "text": "The similarities/differences in the stimuli are: [Exact | Close | Different]",
+    "pdf_page": 3
+  },
+  {
+    "n": 20,
+    "section": "Documenting Differences between the Original and Replication Study",
+    "text": "The similarities/differences in the procedure are: [Exact | Close | Different]",
+    "pdf_page": 3
+  },
+  {
+    "n": 21,
+    "section": "Documenting Differences between the Original and Replication Study",
+    "text": "The similarities/differences in the location (e.g., lab vs. online; alone vs. in groups) are: [Exact | Close | Different]",
+    "pdf_page": 3
+  },
+  {
+    "n": 22,
+    "section": "Documenting Differences between the Original and Replication Study",
+    "text": "The similarities/differences in remuneration are: [Exact | Close | Different]",
+    "pdf_page": 3
+  },
+  {
+    "n": 23,
+    "section": "Documenting Differences between the Original and Replication Study",
+    "text": "The similarities/differences between participant populations are: [Exact | Close | Different]",
+    "pdf_page": 3
+  },
+  {
+    "n": 24,
+    "section": "Documenting Differences between the Original and Replication Study",
+    "text": "What differences between the original study and your study might be expected to influence the size and/or direction of the effect?:",
+    "pdf_page": 3
+  },
+  {
+    "n": 25,
+    "section": "Documenting Differences between the Original and Replication Study",
+    "text": "I have taken the following steps to test whether the differences listed in #24 will influence the outcome of my replication attempt:",
+    "pdf_page": 3
+  },
+  {
+    "n": 26,
+    "section": "Analysis and Replication Evaluation",
+    "text": "My exclusion criteria are (e.g., handling outliers, removing participants from analysis):",
+    "pdf_page": 3
+  },
+  {
+    "n": 27,
+    "section": "Analysis and Replication Evaluation",
+    "text": "My analysis plan is (justify differences from the original):",
+    "pdf_page": 3
+  },
+  {
+    "n": 28,
+    "section": "Analysis and Replication Evaluation",
+    "text": "A successful replication is defined as:",
+    "pdf_page": 3
+  },
+  {
+    "n": 29,
+    "section": "Registering the Replication Attempt",
+    "text": "The finalized materials, procedures, analysis plan etc of the replication are registered here:",
+    "pdf_page": 3
+  },
+  {
+    "n": 30,
+    "section": "Reporting the Replication",
+    "text": "The effect size of the replication is:",
+    "pdf_page": 3
+  },
+  {
+    "n": 31,
+    "section": "Reporting the Replication",
+    "text": "The confidence interval of the replication effect size is:",
+    "pdf_page": 3
+  },
+  {
+    "n": 32,
+    "section": "Reporting the Replication",
+    "text": "The replication effect size [is/is not] (circle one) significantly different from the original effect size?",
+    "pdf_page": 3
+  },
+  {
+    "n": 33,
+    "section": "Reporting the Replication",
+    "text": "I judge the replication to be a(n) [success/informative failure to replicate/practical failure to replicate/inconclusive] (circle one) because:",
+    "pdf_page": 3
+  },
+  {
+    "n": 34,
+    "section": "Reporting the Replication",
+    "text": "Interested experts can obtain my data and syntax here:",
+    "pdf_page": 3
+  },
+  {
+    "n": 35,
+    "section": "Reporting the Replication",
+    "text": "All of the analyses were reported in the report or are available here:",
+    "pdf_page": 3
+  },
+  {
+    "n": 36,
+    "section": "Reporting the Replication",
+    "text": "The limitations of my replication study are:",
+    "pdf_page": 3
+  }
+]

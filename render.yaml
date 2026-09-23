@@ -1,0 +1,32 @@
+# Render Blueprint: New → Blueprint → select this repo.
+# Creates the web app and a Postgres database for consented research logs.
+# NOTE: Render's free Postgres expires 30 days after creation, so create it close to the summit
+# (or pick a paid plan) and export the logs straight after the pilot.
+services:
+  - type: web
+    name: replication-navigator
+    runtime: node
+    plan: free            # switch to a paid always-on plan for the summit day to avoid ~1 min cold starts
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false       # you will be asked for it when the Blueprint is created
+      - key: ACCESS_CODE
+        sync: false
+      - key: ADMIN_TOKEN
+        generateValue: true
+      - key: ANTHROPIC_MODEL
+        value: claude-sonnet-4-5
+      - key: ALLOW_BYO_KEY
+        value: "true"
+      - key: RATE_PER_HOUR
+        value: "60"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: replication-navigator-db
+          property: connectionString
+databases:
+  - name: replication-navigator-db
+    plan: free

@@ -1,0 +1,21 @@
+{
+  "name": "replication-navigator",
+  "version": "0.1.0",
+  "description": "An evidence-grounded, step-by-step guide and AI coach for planning replication studies.",
+  "main": "server/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "check": "node scripts/check-knowledge.js",
+    "eval": "node scripts/eval_coach.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2",
+    "pg": "^8.13.1"
+  }
+}
