@@ -8,5 +8,5 @@ authors:
   - family-names: Shea
     given-names: Kristina
     affiliation: "University of Bologna"
-repository-code: "https://github.com/<your-username>/replication-navigator"
+repository-code: "https://github.com/kristinaraevigna-cyber/replication-navigator"
 keywords: [replication, reproducibility, open science, research methods, AI coach, retrieval grounding, doctoral education]

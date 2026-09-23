@@ -14,7 +14,7 @@ export async function initStore() {
       connectionString: process.env.DATABASE_URL,
       ssl: process.env.PGSSL === 'disable' ? false : { rejectUnauthorized: false }
     });
-    await pool.query(`CREATE TABLE IF NOT EXISTS events (
+    await pool.query(`CREATE TABLE IF NOT EXISTS rn_events (
       id BIGSERIAL PRIMARY KEY,
       ts TIMESTAMPTZ NOT NULL DEFAULT now(),
       session_id TEXT NOT NULL,
@@ -23,6 +23,9 @@ export async function initStore() {
       stage TEXT,
       payload JSONB
     )`);
+    // Supabase exposes the public schema through its REST API; RLS with no policies blocks that
+    // access, while this server (the table owner) can still read and write.
+    await pool.query('ALTER TABLE rn_events ENABLE ROW LEVEL SECURITY');
     console.log('[store] using Postgres');
   } else {
     await mkdir(path.dirname(file), { recursive: true });
@@ -34,7 +37,7 @@ export async function logEvent({ sessionId, participant, type, stage, payload })
   const row = { ts: new Date().toISOString(), session_id: sessionId, participant: participant || null, type, stage: stage || null, payload: payload || {} };
   try {
     if (pool) {
-      await pool.query('INSERT INTO events (session_id, participant, type, stage, payload) VALUES ($1,$2,$3,$4,$5)', [row.session_id, row.participant, row.type, row.stage, row.payload]);
+      await pool.query('INSERT INTO rn_events (session_id, participant, type, stage, payload) VALUES ($1,$2,$3,$4,$5)', [row.session_id, row.participant, row.type, row.stage, row.payload]);
     } else {
       await appendFile(file, JSON.stringify(row) + '\n');
     }
@@ -45,7 +48,7 @@ export async function logEvent({ sessionId, participant, type, stage, payload })
 
 export async function exportEvents() {
   if (pool) {
-    const { rows } = await pool.query('SELECT ts, session_id, participant, type, stage, payload FROM events ORDER BY id');
+    const { rows } = await pool.query('SELECT ts, session_id, participant, type, stage, payload FROM rn_events ORDER BY id');
     return rows;
   }
   try {

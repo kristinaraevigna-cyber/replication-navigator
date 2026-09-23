@@ -37,7 +37,7 @@ No coding is needed. It takes about 20 minutes.
 ### Before the summit
 
 - **Cold starts.** On the free plan the app sleeps after 15 minutes idle and takes about a minute to wake up. Either upgrade the web service to a paid always-on instance for the summit period, or open the app yourself 5 minutes before the session.
-- **Database expiry.** Render's free Postgres **expires 30 days after creation**. Create the Blueprint within 30 days of the summit, or choose a paid database plan, and export the logs straight after the pilot (step 4).
+- **Research-log database.** Without a database, logs are kept in a file that Render wipes on every restart, which is fine for testing but **not for the pilot**. Before the summit, in Render choose **New → Postgres**. The free plan expires after 30 days and you can only have one free database per account; a small paid plan avoids both limits. Copy its **Internal Database URL** into the web service's `DATABASE_URL` (Environment tab). You can also reuse an existing database: the app only creates its own table, `rn_events`. **Supabase works too:** in your project click **Connect**, copy the **Session pooler** connection string (it works over IPv4, which Render needs), put in your database password, and paste it into `DATABASE_URL`. Pick an EU region for GDPR. The app turns on row-level security for its table, so Supabase's public API can't read the logs. Export the logs straight after the pilot (step 4).
 - **Check the model id.** `ANTHROPIC_MODEL` defaults to `claude-sonnet-4-5`. Check <https://docs.claude.com/en/docs/about-claude/models> and update it in Render's Environment tab if needed.
 - **Run the offline evaluation** against the live app:
   ```bash
