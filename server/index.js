@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 import { stages, cards, sources, recipe, systemBlocks, MODE_PROMPTS, extractCitations, KNOWLEDGE_VERSION } from './knowledge.js';
 import { initStore, logEvent, exportEvents } from './store.js';
+import { buildPrereg } from './prereg.js';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PORT = process.env.PORT || 3000;
@@ -108,6 +109,23 @@ app.post('/api/coach', async (req, res) => {
   } catch (err) {
     console.error('[coach] failed', err);
     res.status(500).json({ error: 'Could not reach the AI service. Please try again.' });
+  }
+});
+
+// Draft preregistration (Replication Recipe) as a Word document, built from the team's answers.
+app.post('/api/prereg', async (req, res) => {
+  const { worksheets = {}, recipe = {}, participant = '', sessionId, consent } = req.body || {};
+  try {
+    const { buffer, counts } = await buildPrereg({ worksheets, recipe, participant: String(participant).slice(0, 40) });
+    const safe = String(participant || 'draft').replace(/[^A-Za-z0-9_-]/g, '') || 'draft';
+    res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    res.set('Content-Disposition', `attachment; filename="preregistration-${safe}.docx"`);
+    res.set('X-Prereg-Counts', JSON.stringify(counts));
+    res.send(buffer);
+    if (consent && sessionId) logEvent({ sessionId, participant, type: 'prereg_export', stage: 'prereg', payload: { counts } });
+  } catch (err) {
+    console.error('[prereg] failed', err);
+    res.status(500).json({ error: 'Could not build the preregistration document.' });
   }
 });
 

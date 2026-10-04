@@ -155,6 +155,7 @@ function renderStage(stage) {
       <label class="txt" for="ck-${i}">${esc(c.text)}</label><span>${c.cards.map(citeChip).join('')}</span></li>`).join('')}
     </ul></div>
     ${stage.templates ? `<h2>Templates</h2><div class="card">${stage.templates.map((id) => { const c = cardById.get(id); return `<p><strong>${esc(c.title)}</strong> ${citeChip(id)}<br><small>${esc(c.guidance)}</small></p>`; }).join('')}<button class="btn" data-mode-shortcut="email">Draft an email with the coach</button></div>` : ''}
+    ${stage.id === 'prereg' ? `<h2>Draft your preregistration</h2><div class="card"><p>Download a draft preregistration in the <strong>Replication Recipe</strong> format (Brandt et al., 2014) as a Word document. It uses your answers on the <a href="#" data-view="recipe">Replication Recipe</a> page and fills any gaps from your stage worksheets. Gaps that are still empty are highlighted in yellow.</p><button class="btn primary" data-prereg>Download draft preregistration (.docx)</button></div>` : ''}
     <h2>Resources</h2>
     <div class="card"><ul class="resources">${stage.resources.map((r) => `<li><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.label)}</a></li>`).join('')}</ul></div>
     <div class="nav-row">
@@ -192,6 +193,7 @@ function renderRecipe() {
     <p class="goal">The 36 questions from Brandt et al. (2014). Filling these in documents your replication fully and makes a strong basis for a preregistration. Your answers are included in the exported plan. ${citeChip('brandt2014-02')} ${citeChip('brandt2014-17')}</p>
     ${sections.map((sec) => `<h2>${esc(sec)}</h2><div class="card">${K.recipe.filter((q) => q.section === sec).map((q) => `
       <div class="field"><label for="rq-${q.n}">${q.n}. ${esc(q.text)}</label><textarea id="rq-${q.n}" data-rq="${q.n}">${esc(S.recipe[q.n] || '')}</textarea></div>`).join('')}</div>`).join('')}
+    <div class="card"><p><strong>Ready to preregister?</strong> Download these answers as a draft preregistration. Questions you left blank are drafted from your stage worksheets where possible.</p><button class="btn primary" data-prereg>Download draft preregistration (.docx)</button></div>
     <p><small>Source: Brandt et al. (2014), Journal of Experimental Social Psychology, 50, 217–224. Official template: <a href="https://osf.io/4jd46/" target="_blank" rel="noopener">osf.io/4jd46</a>.</small></p>`;
   $('#coachStage').textContent = 'Replication Recipe';
   $$('[data-rq]').forEach((el) => el.addEventListener('input', () => { S.recipe[el.dataset.rq] = el.value; save(); }));
@@ -403,6 +405,26 @@ function exportPlan() {
   download(`replication-plan-${S.participant || 'draft'}.json`, JSON.stringify({ app: 'replication-navigator', version: 1, worksheets: S.worksheets, ratings: S.ratings, checklist: S.checklist, recipe: S.recipe }, null, 1), 'application/json');
   track('export', null, { worksheets: S.worksheets, ratings: S.ratings, checklist: S.checklist, recipe: S.recipe });
 }
+async function exportPrereg() {
+  const btns = $$('[data-prereg], #preregBtn');
+  btns.forEach((b) => { b.disabled = true; });
+  try {
+    const r = await fetch('/api/prereg', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ worksheets: S.worksheets, recipe: S.recipe, participant: S.participant, sessionId: S.sessionId, consent: S.consent }) });
+    if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || 'Export failed');
+    const blob = await r.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `preregistration-${(S.participant || 'draft').replace(/[^A-Za-z0-9_-]/g, '') || 'draft'}.docx`;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    let c = {}; try { c = JSON.parse(r.headers.get('X-Prereg-Counts') || '{}'); } catch { /* ignore */ }
+    if (c.missing !== undefined) alert(`Draft preregistration downloaded.\n\n${c.recipe} answers from your Replication Recipe\n${c.drafted} drafted from your worksheets (please check)\n${c.missing} still to complete (highlighted in yellow)`);
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    btns.forEach((b) => { b.disabled = false; });
+  }
+}
 function download(name, content, type) {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([content], { type }));
@@ -461,6 +483,7 @@ $('#importFile').addEventListener('change', async (e) => {
 document.addEventListener('click', (e) => {
   const v = e.target.closest('[data-view]');
   if (v) { e.preventDefault(); go(v.dataset.view); return; }
+  if (e.target.closest('[data-prereg]')) { exportPrereg(); return; }
   const c = e.target.closest('button.cite[data-card]');
   if (c) { openCard(c.dataset.card); return; }
   const m = e.target.closest('[data-mode]');
@@ -486,6 +509,7 @@ $('#composer').addEventListener('submit', (e) => {
 });
 $('#prompt').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('#composer').requestSubmit(); } });
 $('#exportBtn').addEventListener('click', exportPlan);
+$('#preregBtn').addEventListener('click', exportPrereg);
 $('#evidenceBtn').addEventListener('click', () => go('evidence'));
 $('#navToggle').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
 function openCoachMobile() { if (matchMedia('(max-width: 900px)').matches) $('#coach').classList.add('open'); }

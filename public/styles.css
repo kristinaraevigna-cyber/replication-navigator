@@ -27,6 +27,7 @@
   }
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { margin: 0; height: 100%; }
 body { background: var(--bg); color: var(--text); font: 15px/1.55 var(--font); }
 button, input, textarea, select { font: inherit; color: inherit; }
@@ -177,4 +178,7 @@ hr { border: 0; border-top: 1px solid var(--border); width: 100%; }
 }
 @media (max-width: 520px) {
   .top-actions #evidenceBtn { display: none; }
+}
+@media (max-width: 640px) {
+  .top-actions #preregBtn { display: none; }
 }
