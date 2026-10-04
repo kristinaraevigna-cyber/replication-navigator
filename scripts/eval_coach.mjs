@@ -10,12 +10,18 @@ const results = [];
 for (let r = 0; r < reps; r++) for (const q of qs) {
   const t0 = Date.now();
   const res = await fetch(`${BASE}/api/coach`, { method: 'POST', headers: { 'content-type': 'application/json', ...(process.env.USER_API_KEY ? { 'x-user-api-key': process.env.USER_API_KEY } : {}) },
-    body: JSON.stringify({ stageId: q.stage, messages: [{ role: 'user', content: q.q }], worksheet: {}, sessionId: `eval-${r}-${q.id}`, accessCode: process.env.ACCESS_CODE, consent: false }) });
-  const d = await res.json();
+    body: JSON.stringify({ stageId: q.stage, messages: [{ role: 'user', content: q.q }], worksheet: {}, profile: { level: 'some' }, sessionId: `eval-${r}-${q.id}`, accessCode: process.env.ACCESS_CODE, consent: false }) });
+  let d = {};
+  if ((res.headers.get('content-type') || '').includes('ndjson')) {
+    const lines = (await res.text()).split('\n').filter(Boolean).map((l) => JSON.parse(l));
+    d.text = lines.filter((l) => l.type === 'delta').map((l) => l.text).join('');
+    const done = lines.find((l) => l.type === 'done') || {};
+    d.citations = done.citations; d.stop = done.stop;
+  } else d = await res.json();
   const valid = d.citations?.valid || [], unknown = d.citations?.unknown || [];
   const hit = q.should_cite_any ? valid.some((c) => q.should_cite_any.includes(c)) : null;
   const saysUncovered = /doesn.t cover|does not cover|not covered|outside (the|my) evidence|isn.t covered/i.test(d.text || '');
-  results.push({ rep: r, ...q, ok: res.ok, latencyMs: Date.now() - t0, valid, unknown, expectedCardHit: hit, saysUncovered, reply: d.text || d.error });
+  results.push({ rep: r, ...q, ok: res.ok, stop: d.stop, latencyMs: Date.now() - t0, valid, unknown, expectedCardHit: hit, saysUncovered, reply: d.text || d.error });
   process.stdout.write(`${q.id}${res.ok ? '' : '!'} `);
 }
 mkdirSync(new URL('../evaluation/results/', import.meta.url), { recursive: true });

@@ -32,8 +32,10 @@
 
   <div class="layout">
     <aside class="sidebar" id="sidebar">
+      <p class="time-total" id="timeTotal"></p>
       <ol class="stage-list" id="stageList"></ol>
       <div class="side-extra">
+        <button class="side-link finish-link" data-view="finish">✓ Finish &amp; download</button>
         <button class="side-link" data-view="recipe">Replication Recipe (36 Qs)</button>
         <button class="side-link" data-view="evidence">Evidence base</button>
         <button class="side-link" data-view="survey">Feedback survey</button>
@@ -52,7 +54,6 @@
         <button class="icon-btn only-mobile" id="coachClose" aria-label="Close coach">✕</button>
       </div>
       <div class="modes" id="modes">
-        <button data-mode="explain">Explain this stage</button>
         <button data-mode="review">Review my worksheet</button>
         <button data-mode="missing">What am I missing?</button>
         <button data-mode="challenge">Challenge me</button>
@@ -84,7 +85,8 @@
   <dialog id="welcome" class="dialog">
     <form class="dialog-inner" id="welcomeForm">
       <h2>Welcome to Replication Navigator</h2>
-      <p>This tool walks you through planning a replication in 10 stages. Each stage has a worksheet, a checklist, resources and an AI coach. The coach draws only on a curated evidence base of nine key sources on replication, and every recommendation cites the card it comes from.</p>
+      <p>This tool walks you step by step through planning a replication. Each stage explains what to decide in plain language, gives you a short worksheet and checklist, and has an AI coach you can ask questions. The coach only uses a curated evidence base of nine key sources on replication, and cites where each piece of advice comes from.</p>
+      <p class="time-hint"><strong>Time:</strong> about 1½–2 hours for stages 1–9 (less if some stages don't apply to you). At the end you download your plan and a draft preregistration. Your work is saved in this browser, so you can stop and come back on the same device.</p>
       <label>Team or participant code <small>(pseudonymous, e.g. T3-P2; don't use your name)</small>
         <input id="participantInput" autocomplete="off" maxlength="40">
       </label>
@@ -114,6 +116,10 @@
       <label class="check"><input type="checkbox" id="setConsent"> Log my pseudonymous usage for research</label>
       <hr>
       <div class="row">
+        <button class="btn ghost" type="button" id="changeSetup">Change my setup answers</button>
+        <button class="btn ghost" type="button" id="backupBtn">Download backup (.json)</button>
+      </div>
+      <div class="row">
         <button class="btn ghost" type="button" id="importBtn">Import plan (.json)</button>
         <input type="file" id="importFile" accept="application/json" hidden>
         <button class="btn danger" type="button" id="resetBtn">Start over</button>
@@ -123,6 +129,40 @@
       </div>
     </form>
   </dialog>
+
+  <!-- Setup screener -->
+  <dialog id="screener" class="dialog">
+    <form class="dialog-inner" id="screenerForm">
+      <h2>Four quick questions</h2>
+      <p>Your answers tailor the tool: we hide what you don't need and adjust how much we explain. You can change them later in Settings.</p>
+      <fieldset class="consent"><legend>How familiar are you with replication research?</legend>
+        <label class="check"><input type="radio" name="level" value="new" checked> I'm new to it. Please explain things in plain language</label>
+        <label class="check"><input type="radio" name="level" value="some"> I have some research experience</label>
+        <label class="check"><input type="radio" name="level" value="expert"> I'm experienced. Keep it brief and technical</label>
+      </fieldset>
+      <fieldset class="consent"><legend>Are the original study's data available?</legend>
+        <label class="check"><input type="radio" name="data" value="yes"> Yes</label>
+        <label class="check"><input type="radio" name="data" value="no"> No</label>
+        <label class="check"><input type="radio" name="data" value="unsure" checked> I don't know yet</label>
+      </fieldset>
+      <fieldset class="consent"><legend>Will you translate or adapt materials to another language or culture?</legend>
+        <label class="check"><input type="radio" name="translate" value="yes"> Yes</label>
+        <label class="check"><input type="radio" name="translate" value="no" checked> No</label>
+      </fieldset>
+      <fieldset class="consent"><legend>What kind of study are you replicating?</legend>
+        <label class="check"><input type="radio" name="approach" value="quantitative" checked> Quantitative (experiment, survey, …)</label>
+        <label class="check"><input type="radio" name="approach" value="qualitative"> Qualitative (interviews, case study, …)</label>
+      </fieldset>
+      <div class="dialog-actions"><button class="btn ghost" type="button" id="screenerSkip">Skip</button><button class="btn primary" type="submit">Continue</button></div>
+    </form>
+  </dialog>
+
+  <!-- Glossary term -->
+  <dialog id="termDialog" class="dialog small-dialog">
+    <form method="dialog" class="dialog-inner"><div id="termBody"></div><div class="dialog-actions"><button class="btn primary" value="close">Got it</button></div></form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" hidden></div>
 
   <script src="app.js" type="module"></script>
 </body>

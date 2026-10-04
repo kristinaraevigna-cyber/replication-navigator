@@ -1,0 +1,217 @@
+[
+ {
+  "term": "reproduction",
+  "aliases": [],
+  "def": "Re-running the original analysis on the original data to check you get the same numbers.",
+  "card": "forrt2025-01"
+ },
+ {
+  "term": "close replication",
+  "aliases": [
+   "direct replication",
+   "literal replication"
+  ],
+  "def": "Repeating a study as exactly as possible with new data, to test whether the original result holds.",
+  "card": "brandt2014-01"
+ },
+ {
+  "term": "conceptual replication",
+  "aliases": [
+   "constructive replication"
+  ],
+  "def": "Testing the same idea with deliberately different methods, measures or samples, to see whether it generalises.",
+  "card": "irvine2021-02"
+ },
+ {
+  "term": "FReD",
+  "aliases": [
+   "FORRT Replication Database"
+  ],
+  "def": "The FORRT Replication Database: a searchable list of replication studies and their outcomes.",
+  "card": "forrt2025-15"
+ },
+ {
+  "term": "effect size",
+  "aliases": [],
+  "def": "A number for how big an effect is (e.g. Cohen's d or a correlation r), independent of sample size."
+ },
+ {
+  "term": "confidence interval",
+  "aliases": [],
+  "def": "A range of plausible values for the true effect. Narrow intervals mean a precise estimate."
+ },
+ {
+  "term": "power analysis",
+  "aliases": [
+   "statistical power"
+  ],
+  "def": "The chance that a study detects an effect of a given size if it really exists. A power analysis tells you how many participants you need."
+ },
+ {
+  "term": "small telescopes",
+  "aliases": [],
+  "def": "A sample-size approach: test whether the original study could even have detected the effect. A common rule of thumb is about 2.5 times the original sample.",
+  "card": "forrt2025-36"
+ },
+ {
+  "term": "SESOI",
+  "aliases": [
+   "smallest effect size of interest"
+  ],
+  "def": "The smallest effect you would still consider meaningful. You need it to show that an effect is absent or negligible.",
+  "card": "forrt2025-37"
+ },
+ {
+  "term": "equivalence",
+  "aliases": [
+   "equivalence test",
+   "equivalence testing",
+   "TOST",
+   "equivalence range",
+   "region of equivalence"
+  ],
+  "def": "A test of whether an effect is small enough to count as negligible, i.e. inside a range you set in advance (two one-sided tests, TOST).",
+  "card": "anderson2016-10"
+ },
+ {
+  "term": "AIPE",
+  "aliases": [],
+  "def": "Accuracy in parameter estimation: planning the sample so the confidence interval around the effect is narrow enough.",
+  "card": "anderson2016-15"
+ },
+ {
+  "term": "Bayes factor",
+  "aliases": [],
+  "def": "A number expressing how much more the data support one hypothesis (e.g. 'no effect') than another.",
+  "card": "anderson2016-11"
+ },
+ {
+  "term": "validity evidence",
+  "aliases": [
+   "construct validity"
+  ],
+  "def": "Evidence that a measure really captures what it claims to, e.g. reliability, factor structure, or correlations with related measures.",
+  "card": "flake2023-03"
+ },
+ {
+  "term": "reliability",
+  "aliases": [
+   "Cronbach's α",
+   "Cronbach's alpha"
+  ],
+  "def": "How consistently a measure gives similar scores. Cronbach's α is a common index, but on its own it does not show validity.",
+  "card": "flake2023-05"
+ },
+ {
+  "term": "factor structure",
+  "aliases": [
+   "factor analysis"
+  ],
+  "def": "Whether a questionnaire's items group together in the way the theory expects (checked with factor analysis)."
+ },
+ {
+  "term": "measurement invariance",
+  "aliases": [
+   "measurement equivalence"
+  ],
+  "def": "Whether a questionnaire works the same way in different groups or languages, so scores can be compared.",
+  "card": "forrt2025-42"
+ },
+ {
+  "term": "manipulation check",
+  "aliases": [
+   "manipulation checks"
+  ],
+  "def": "A question or measure confirming that the experimental manipulation worked as intended.",
+  "card": "forrt2025-44"
+ },
+ {
+  "term": "attention check",
+  "aliases": [
+   "careless responders",
+   "careless responding"
+  ],
+  "def": "An item that identifies participants who are not reading carefully, e.g. 'Please select 3 for this question'.",
+  "card": "forrt2025-104"
+ },
+ {
+  "term": "seed",
+  "aliases": [
+   "seeds",
+   "random seed"
+  ],
+  "def": "A starting number for a computer's random-number generator. Setting it makes analyses that use randomness (e.g. bootstrapping) give the same result every time. If your analysis uses no randomness, you can ignore it.",
+  "card": "forrt2025-20"
+ },
+ {
+  "term": "robustness",
+  "aliases": [
+   "robustness check",
+   "robustness checks"
+  ],
+  "def": "Checking whether a result still holds after small, reasonable changes to the analysis (e.g. a different outlier rule).",
+  "card": "forrt2025-22"
+ },
+ {
+  "term": "preregistration",
+  "aliases": [],
+  "def": "A time-stamped public record of your hypotheses and analysis plan, made before you collect or look at the data.",
+  "card": "forrt2025-31"
+ },
+ {
+  "term": "Registered Report",
+  "aliases": [],
+  "def": "A paper format where the introduction and methods are peer-reviewed and accepted before data collection, so publication doesn't depend on the results.",
+  "card": "obenauer2024-22"
+ },
+ {
+  "term": "exclusion rules",
+  "aliases": [
+   "exclusion criteria"
+  ],
+  "def": "Rules, set in advance, for which participants or data points are left out of the analysis.",
+  "card": "forrt2025-108"
+ },
+ {
+  "term": "contingency",
+  "aliases": [
+   "contingencies",
+   "contingency plans"
+  ],
+  "def": "What you will do if something goes wrong, decided in advance.",
+  "card": "obenauer2024-20"
+ },
+ {
+  "term": "adversarial collaboration",
+  "aliases": [
+   "red team"
+  ],
+  "def": "Working with researchers who expect a different result, agreeing the design in advance so both sides accept the outcome.",
+  "card": "forrt2025-102"
+ },
+ {
+  "term": "PubPeer",
+  "aliases": [],
+  "def": "A website where researchers comment on published papers. Useful for finding known problems with your target study.",
+  "card": "forrt2025-18"
+ },
+ {
+  "term": "OSF",
+  "aliases": [
+   "Open Science Framework"
+  ],
+  "def": "A free platform for sharing materials, data and code, and for preregistering studies."
+ },
+ {
+  "term": "replication value",
+  "aliases": [],
+  "def": "How much a replication could add: high when the result matters AND we are still unsure whether it is true.",
+  "card": "isager2021-02"
+ },
+ {
+  "term": "deviation",
+  "aliases": [],
+  "def": "Any way in which what you actually did differs from what you preregistered. Report all of them openly.",
+  "card": "forrt2025-33"
+ }
+]

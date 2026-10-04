@@ -76,10 +76,27 @@ See `evaluation/PILOT_PROTOCOL.md`. There are four layers:
 3. **Pilot use** (OSM summit, about 40 participants). Usage logs, reply ratings, citation opens and flags, checklist completion, SUS, and custom items on trust, rigour and learning.
 4. **Output quality.** Experts score the exported replication plans with a rubric based on the FORRT checklist and the Replication Recipe.
 
-## 6. Known limitations
+## 6. Version 0.2: changes after expert pre-testing
+
+Two experts tested v0.1 before the pilot. Their feedback led to these changes (logged here because the design iteration is itself a result):
+
+| Feedback | Change in v0.2 |
+|---|---|
+| No clear end point; the Markdown export was not usable | A *Finish & download* page; the plan is exported as a formatted Word document; a draft preregistration in the Replication Recipe format is generated from the team's answers |
+| Pitched at experts; jargon in fields and checklists (e.g. “validity evidence”, “equivalence plan”, “seeds”) | Plain-language stage introductions; “?” help with examples on every field; a 29-term glossary with one-click definitions; checklists rewritten in plain language with the literature's wording kept underneath. Example: Stage 5 now asks for evidence that each measure works, “at least reliability (e.g. α) and ideally a validation study or factor structure”. It keeps the evidence base's warning that α alone is not validity evidence (flake2023-05) |
+| Too many questions that may not apply | A four-question setup screener hides inapplicable fields and stages (e.g. translation fields; Stage 4 when no data exist) and hides optional fields from newcomers |
+| “Explain this stage” wasted time and compute; the coach was slow; replies were cut off | Stage explanations are pre-written (no model call); replies stream token by token; shorter answers that respond to the question first; a *Continue* button when a reply hits the length limit |
+| The coach lectured instead of solving the immediate question, and asked about irrelevant things | New answer rules (answer first, apply to the user's study, skip what doesn't apply, ≤180 words); the coach receives the screener profile; suggested starter questions per stage |
+| Let users upload the target paper | PDF upload with automatic extraction of key facts. Results are shown for checking, can pre-fill empty fields, and are passed to the coach as data |
+| How long does it take? | Time estimates per stage and in total, on the welcome screen and in the sidebar |
+
+New logged events for the evaluation: `screener`, `help_open` (field help and glossary terms), `prefill`, `paper_upload`, `finish_view`, `prereg_export`. Coach turns now record `stop` (whether a reply hit the length limit).
+
+## 7. Known limitations
 
 - The evidence base is small and weighted towards psychology and management. Qualitative replication is barely covered.
 - LLM drafting of the cards introduces paraphrase risk. Mitigations: verbatim-quote verification, expert review, and in-app flagging.
 - Citations can be *valid* (the id exists) yet not *supportive*. Only human rating can measure support.
 - Model behaviour may change as models are updated. Record the model id (logged with every turn) and the knowledge version.
 - Page numbers for Flake et al. refer to the accepted manuscript, not the version of record.
+- Plain-language help, glossary definitions and the paper-extraction prompt were written for v0.2 and have not yet been reviewed by experts. Automatic extraction from PDFs can be wrong, so users are asked to check every value.

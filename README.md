@@ -64,6 +64,10 @@ Further reading is linked from the [ARIM how-to page](https://www.arimweb.org/re
 9. Analysis & success criteria
 10. Interpret, report & publish
 
+Each stage opens with a plain-language explanation and a time estimate. Fields have “?” help with examples, jargon is underlined with one-click definitions (`knowledge/glossary.json`), and checklists are written in plain language with the literature's wording underneath.
+
+A four-question **setup screener** (experience, data availability, translation, quantitative/qualitative) hides fields and stages that don't apply and tells the coach how much to explain. Teams can **upload the paper they are replicating**: the model extracts key facts (N, effect size, design, measures, setting) to pre-fill worksheets and Replication Recipe questions, and the coach tailors its advice to that study. The PDF is not stored. A **Finish & download** page gives the plan and the draft preregistration as Word documents.
+
 Stages 1, 6 and 9 are **expert check-points**. Beyond the stages there is the full 36-question **Replication Recipe**, a **draft preregistration export** (a Word document in the Replication Recipe format, filled from the team's Recipe answers and, where those are blank, from their stage worksheets, with remaining gaps highlighted), a searchable **Evidence base**, an in-app **feedback survey** (SUS plus items on the coach), and **export** of the finished plan as Markdown and JSON.
 
 ## Running locally
@@ -89,7 +93,9 @@ See [`docs/DEPLOY.md`](docs/DEPLOY.md). In short: push this repo to GitHub, then
 | `ACCESS_CODE` | — | workshop code; if empty, anyone can use the server key |
 | `ALLOW_BYO_KEY` | `true` | lets visitors use their own Anthropic key (kept only in their browser tab) |
 | `ANTHROPIC_MODEL` | `claude-sonnet-4-5` | model id; check the Anthropic docs for current models |
-| `MAX_TOKENS` | `1200` | maximum length of each coach reply |
+| `MAX_TOKENS` | `1500` | maximum length of each coach reply (replies stream; users can click Continue) |
+| `PAPER_MODEL` | same as `ANTHROPIC_MODEL` | model used to read uploaded papers |
+| `MAX_PDF_MB` | `15` | largest PDF that can be uploaded |
 | `RATE_PER_HOUR` | `60` | coach requests per session per hour (server key only) |
 | `DATABASE_URL` | — | Postgres for research logs; if not set, logs go to `data/events.jsonl` |
 | `ADMIN_TOKEN` | — | required to download the logs from `/api/admin/export` |

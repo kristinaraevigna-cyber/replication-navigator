@@ -14,7 +14,8 @@ let lastOpenedCitation = null;
 // ---------- state ----------
 const defaultState = () => ({
   sessionId: uid(), participant: '', consent: false, accessCode: '', onboarded: false,
-  view: 'stage:target', worksheets: {}, ratings: {}, checklist: {}, chats: {}, recipe: {}, survey: {}, surveySent: false, msgRatings: {}
+  view: 'stage:target', worksheets: {}, ratings: {}, checklist: {}, chats: {}, recipe: {}, survey: {}, surveySent: false, msgRatings: {},
+  profile: {}, screened: false, showAdvanced: false, paper: null, openHelp: {}
 });
 let S = defaultState();
 function load() {
@@ -37,6 +38,46 @@ function track(type, stage, payload = {}) {
 }
 
 // ---------- helpers ----------
+const P = () => S.profile || {};
+const isNew = () => P().level === 'new';
+const matches = (cond) => !cond || Object.entries(cond).every(([k, v]) => !P()[k] || P()[k] === v);
+const visible = (item) => matches(item.when);
+const stageOptional = (s) => Boolean(s.optional_when) && Object.entries(s.optional_when).every(([k, v]) => P()[k] === v);
+const fmtMin = (m) => (m >= 60 ? `${Math.floor(m / 60)} h ${m % 60 ? (m % 60) + ' min' : ''}`.trim() : `${m} min`);
+function totalMinutes() { return K.stages.filter((s) => s.id !== 'report' && !stageOptional(s)).reduce((a, s) => a + (s.minutes || 0), 0); }
+
+// Glossary: wrap the first occurrence of each term in a text block with a clickable explanation.
+let GLOSS_RE = null; const GLOSS = new Map();
+function initGlossary() {
+  const entries = [];
+  for (const g of K.glossary || []) for (const w of [g.term, ...(g.aliases || [])]) { GLOSS.set(w.toLowerCase(), g); entries.push(w); }
+  entries.sort((a, b) => b.length - a.length);
+  const escRe = (w) => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  GLOSS_RE = new RegExp(`(^|[^A-Za-z0-9])(${entries.map(escRe).join('|')})(?![A-Za-z0-9])`, 'gi');
+}
+function gloss(text) {
+  const html = esc(text);
+  if (!GLOSS_RE) return html;
+  const used = new Set();
+  return html.replace(GLOSS_RE, (m, pre, word) => {
+    const g = GLOSS.get(word.toLowerCase());
+    if (!g || used.has(g.term)) return m;
+    used.add(g.term);
+    return `${pre}<button type="button" class="term" data-term="${esc(g.term)}">${word}</button>`;
+  });
+}
+function openTerm(term) {
+  const g = (K.glossary || []).find((x) => x.term === term); if (!g) return;
+  $('#termBody').innerHTML = `<h3 style="margin:0 0 .4rem">${esc(g.term)}</h3><p>${esc(g.def)}</p>${g.card ? `<p><small>Evidence:</small> ${citeChip(g.card)}</p>` : ''}`;
+  $('#termDialog').showModal();
+  track('help_open', currentStage()?.id, { term });
+}
+let toastTimer;
+function toast(msg, ms = 6000) {
+  const el = $('#toast'); el.innerHTML = msg; el.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.hidden = true; }, ms);
+}
+
 const stageById = (id) => K.stages.find((s) => s.id === id);
 const currentStage = () => (S.view.startsWith('stage:') ? stageById(S.view.slice(6)) : null);
 
@@ -77,19 +118,23 @@ function renderMarkdown(text) {
 // ---------- progress / sidebar ----------
 function stageProgress(stage) {
   const ticks = S.checklist[stage.id] || [];
-  const done = stage.checklist.filter((_, i) => ticks[i]).length;
-  return { done, total: stage.checklist.length };
+  const items = stage.checklist.map((c, i) => ({ c, i })).filter(({ c }) => visible(c));
+  const done = items.filter(({ i }) => ticks[i]).length;
+  return { done, total: items.length };
 }
 function renderSidebar() {
   $('#stageList').innerHTML = K.stages.map((s) => {
     const { done, total } = stageProgress(s);
+    const opt = stageOptional(s);
     const cls = done === total ? 'done' : done ? 'part' : '';
     const cur = S.view === `stage:${s.id}` ? 'aria-current="step"' : '';
-    return `<li><button data-view="stage:${s.id}" ${cur}><span class="stage-num ${cls}">${done === total ? '✓' : s.n}</span><span class="stage-label">${esc(s.title)}</span></button></li>`;
+    const meta = opt ? 'optional for you' : s.id === 'report' ? 'after data collection' : `≈ ${s.minutes} min`;
+    return `<li><button data-view="stage:${s.id}" ${cur} class="${opt ? 'opt' : ''}"><span class="stage-num ${cls}">${done === total ? '✓' : s.n}</span><span class="stage-label">${esc(s.title)}<small class="stage-meta">${meta}</small></span></button></li>`;
   }).join('');
   $$('.side-link').forEach((b) => b.classList.toggle('active', S.view === b.dataset.view));
   let d = 0, t = 0;
-  K.stages.forEach((s) => { const p = stageProgress(s); d += p.done; t += p.total; });
+  K.stages.forEach((s) => { if (stageOptional(s) || s.id === 'report') return; const p = stageProgress(s); d += p.done; t += p.total; });
+  $('#timeTotal').textContent = `Stages 1–9 take about ${fmtMin(totalMinutes())}`;
   const pct = Math.round((d / t) * 100);
   $('#progressBar').style.width = pct + '%';
   $('#progressText').textContent = pct + '%';
@@ -102,6 +147,7 @@ function go(view) {
   $('#sidebar').classList.remove('open');
   $('#main').scrollTop = 0; window.scrollTo(0, 0);
   if (view.startsWith('stage:')) track('stage_view', view.slice(6));
+  if (view === 'finish') track('finish_view', null, { progress: $('#progressText').textContent });
 }
 
 function render() {
@@ -112,6 +158,7 @@ function render() {
   else if (kind === 'survey') renderSurvey();
   else if (kind === 'about') renderAbout();
   else if (kind === 'evidence') renderEvidence();
+  else if (kind === 'finish') renderFinish();
   renderChat();
 }
 
@@ -121,8 +168,14 @@ function renderStage(stage) {
   const ticks = S.checklist[stage.id] || [];
   const idx = K.stages.indexOf(stage);
   const prev = K.stages[idx - 1], next = K.stages[idx + 1];
+  const optional = stageOptional(stage);
+  const fields = stage.fields.filter(visible);
+  const hideAdv = isNew() && !S.showAdvanced;
+  const advCount = fields.filter((f) => f.advanced).length;
+  const helpOpen = (key) => (S.openHelp[key] ?? isNew());
 
   const fieldHtml = (f) => {
+    if (f.advanced && hideAdv && !ws[f.id]) return '';
     const v = ws[f.id] ?? (f.type === 'checks' ? [] : '');
     let input = '';
     if (f.type === 'textarea') input = `<textarea id="f-${f.id}" data-field="${f.id}">${esc(v)}</textarea>`;
@@ -131,36 +184,49 @@ function renderStage(stage) {
     else if (f.type === 'checks') input = `<div class="checks">${f.options.map((o) => `<label class="check"><input type="checkbox" data-multi="${f.id}" value="${esc(o)}" ${v.includes(o) ? 'checked' : ''}> ${esc(o)}</label>`).join('')}</div>`;
     const rating = f.rating ? `<span class="rating" data-rating="${f.id}">Rate 1–5: ${[1, 2, 3, 4, 5].map((n) => `<button type="button" data-r="${n}" class="${rt[f.id] === n ? 'on' : ''}" aria-label="${n}">${n}</button>`).join('')}</span>` : '';
     const cites = (f.cards || []).map(citeChip).join('');
-    const lab = f.type === 'checks' ? `<span class="flabel">${esc(f.label)}</span>` : `<label for="f-${f.id}">${esc(f.label)}</label>`;
-    return `<div class="field">${lab}${input}<div class="field-meta">${rating}${cites ? `<small>Evidence:</small> ${cites}` : ''}</div></div>`;
+    const hk = `${stage.id}.${f.id}`;
+    const helpBtn = f.help ? `<button type="button" class="help-btn" data-help="${hk}" aria-expanded="${helpOpen(hk)}" title="What does this mean?">?</button>` : '';
+    const lab = f.type === 'checks' ? `<span class="flabel">${gloss(f.label)}${helpBtn}</span>` : `<label for="f-${f.id}">${gloss(f.label)}</label>${helpBtn}`;
+    const help = f.help ? `<div class="help" id="help-${hk.replace('.', '-')}" ${helpOpen(hk) ? '' : 'hidden'}>${gloss(f.help)}</div>` : '';
+    return `<div class="field ${f.advanced ? 'adv' : ''}"><div class="label-row">${lab}${f.advanced ? '<span class="tag">optional</span>' : ''}</div>${help}${input}<div class="field-meta">${rating}${cites ? `<small>Evidence:</small> ${cites}` : ''}</div></div>`;
   };
 
+  const checks = stage.checklist.map((c, i) => ({ c, i })).filter(({ c }) => visible(c));
+  const paperCard = stage.id === 'target' ? paperCardHtml() : '';
+  const qualNote = P().approach === 'qualitative' && ['target', 'sample', 'analysis'].includes(stage.id)
+    ? '<div class="note">You said your study is qualitative. The evidence base is mostly about quantitative replication, so some fields here may not fit. Skip what does not apply and ask the experts.</div>' : '';
+
   $('#main').innerHTML = `
-    <div class="eyebrow">Stage ${stage.n} of ${K.stages.length}</div>
+    <div class="eyebrow">Stage ${stage.n} of ${K.stages.length} · ${stage.id === 'report' ? 'after data collection' : `≈ ${stage.minutes} min`}</div>
     <h1>${esc(stage.title)}</h1>
-    <p class="goal">${esc(stage.goal)}</p>
-    ${stage.expert_review ? '<span class="expert">★ Expert check-point: have an expert review this stage before moving on</span>' : ''}
-    <div class="card" style="margin-top:16px">
-      <h3 style="margin-top:0">Questions to answer</h3>
-      <ul class="questions">${stage.questions.map((q) => `<li>${esc(q)}</li>`).join('')}</ul>
+    ${stage.expert_review ? '<span class="expert">★ Expert check-point: have an expert look at this stage before moving on</span>' : ''}
+    ${optional ? `<div class="note">Based on your setup answers, this stage probably doesn't apply to you (the original data are not available). Note that in the first field and move on. <button class="btn" data-view="stage:${next.id}">Skip to ${esc(next.title)} →</button></div>` : ''}
+    ${qualNote}
+    <div class="card intro">
+      <h3 style="margin-top:0">What this stage is about</h3>
+      <p>${gloss(stage.intro || stage.goal)}</p>
+      <details ${isNew() ? '' : 'open'}><summary>Questions to answer</summary><ul class="questions">${stage.questions.map((q) => `<li>${gloss(q)}</li>`).join('')}</ul></details>
     </div>
+    ${paperCard}
     <h2>Worksheet</h2>
-    <div class="card">${stage.fields.map(fieldHtml).join('')}
-      ${stage.id === 'target' ? '<p><small>Ratings help you compare candidate targets. Isager et al. caution that scores support <em>ranking</em>, not precise ratios.</small> ' + citeChip('isager2021-24') + '</p>' : ''}
+    <div class="card">${fields.map(fieldHtml).join('')}
+      ${hideAdv && advCount ? `<button class="btn ghost small" data-show-adv>Show ${advCount} optional field${advCount > 1 ? 's' : ''} for more detail</button>` : ''}
+      ${stage.id === 'target' ? '<p><small>Ratings help you compare candidate studies. They are for ranking, not precise scores.</small> ' + citeChip('isager2021-24') + '</p>' : ''}
       ${stage.id === 'differences' ? `<p><small>For a full structured version, fill in the <a href="#" data-view="recipe">Replication Recipe</a> (Brandt et al., 2014).</small></p>` : ''}
     </div>
     <h2>Checklist</h2>
-    <div class="card"><ul class="checklist">${stage.checklist.map((c, i) => `
+    <div class="card"><ul class="checklist">${checks.map(({ c, i }) => `
       <li><input type="checkbox" id="ck-${i}" data-check="${i}" ${ticks[i] ? 'checked' : ''}>
-      <label class="txt" for="ck-${i}">${esc(c.text)}</label><span>${c.cards.map(citeChip).join('')}</span></li>`).join('')}
+      <div class="txt"><label for="ck-${i}">${gloss(c.text)}</label>${c.technical && c.technical !== c.text ? `<div class="tech">In the literature: ${esc(c.technical)}</div>` : ''}</div><span class="cites">${c.cards.map(citeChip).join('')}</span></li>`).join('')}
     </ul></div>
-    ${stage.templates ? `<h2>Templates</h2><div class="card">${stage.templates.map((id) => { const c = cardById.get(id); return `<p><strong>${esc(c.title)}</strong> ${citeChip(id)}<br><small>${esc(c.guidance)}</small></p>`; }).join('')}<button class="btn" data-mode-shortcut="email">Draft an email with the coach</button></div>` : ''}
-    ${stage.id === 'prereg' ? `<h2>Draft your preregistration</h2><div class="card"><p>Download a draft preregistration in the <strong>Replication Recipe</strong> format (Brandt et al., 2014) as a Word document. It uses your answers on the <a href="#" data-view="recipe">Replication Recipe</a> page and fills any gaps from your stage worksheets. Gaps that are still empty are highlighted in yellow.</p><button class="btn primary" data-prereg>Download draft preregistration (.docx)</button></div>` : ''}
+    ${stage.templates ? `<h2>Email templates</h2><div class="card">${stage.templates.map((id) => { const c = cardById.get(id); return `<p><strong>${esc(c.title.replace('Email: ', ''))}</strong> ${citeChip(id)}<br><small>${esc(c.guidance)}</small></p>`; }).join('')}<button class="btn" data-mode-shortcut="email">Draft an email with the coach</button></div>` : ''}
+    ${stage.id === 'prereg' ? `<h2>Draft your preregistration</h2><div class="card"><p>Download a draft preregistration in the <strong>Replication Recipe</strong> format (Brandt et al., 2014) as a Word document. It uses your answers on the <a href="#" data-view="recipe">Replication Recipe</a> page and fills gaps from your stage worksheets. Anything still empty is highlighted in yellow.</p><button class="btn primary" data-prereg>Download draft preregistration (.docx)</button></div>` : ''}
     <h2>Resources</h2>
     <div class="card"><ul class="resources">${stage.resources.map((r) => `<li><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.label)}</a></li>`).join('')}</ul></div>
     <div class="nav-row">
       ${prev ? `<button class="btn" data-view="stage:${prev.id}">← ${esc(prev.title)}</button>` : '<span></span>'}
-      ${next ? `<button class="btn primary" data-view="stage:${next.id}">${esc(next.title)} →</button>` : `<button class="btn primary" data-view="survey">Finish: give feedback →</button>`}
+      ${stage.id === 'analysis' ? `<span class="row"><button class="btn" data-view="stage:report">${esc(next.title)}</button><button class="btn primary" data-view="finish">Finish &amp; download →</button></span>`
+        : next ? `<button class="btn primary" data-view="stage:${next.id}">${esc(next.title)} →</button>` : `<button class="btn primary" data-view="finish">Finish &amp; download →</button>`}
     </div>`;
 
   $('#coachStage').textContent = `Stage ${stage.n}: ${stage.title}`;
@@ -183,6 +249,96 @@ function renderStage(stage) {
     renderSidebar();
     track('checklist', stage.id, { item: Number(el.dataset.check), checked: el.checked });
   }));
+  if (stage.id === 'target') bindPaperCard();
+}
+
+// ---------- target paper upload ----------
+function paperCardHtml() {
+  const p = S.paper;
+  if (!p) return `
+    <div class="card upload">
+      <h3 style="margin-top:0">Optional: upload the paper you're replicating</h3>
+      <p>Upload the PDF and the AI will pull out the key details (sample size, effect size, design, measures) to fill in your worksheets, and the coach will tailor its advice to that study. It takes about 30–60 seconds.</p>
+      <p><small>The PDF is sent to the AI service (Anthropic) only to extract these details and is not stored. Use a paper you have legal access to. Always check the extracted details against the paper.</small></p>
+      <label class="btn primary file-btn">Choose PDF…<input type="file" id="paperFile" accept="application/pdf" hidden></label>
+      <span id="paperStatus" class="status"></span>
+    </div>`;
+  const parts = p.participants || {}, eff = p.effect || {};
+  const row = (k, v) => (v ? `<tr><th>${esc(k)}</th><td>${esc(typeof v === 'string' ? v : JSON.stringify(v))}</td></tr>` : '');
+  const sugg = prefillSuggestions();
+  return `
+    <div class="card upload">
+      <h3 style="margin-top:0">Your target paper</h3>
+      <table class="kv">
+        ${row('Reference', p.citation)}${row('Study', p.study_label)}${row('Main claim', p.main_claim)}${row('Design', p.design)}
+        ${row('Participants', [parts.n, parts.population, parts.country, parts.setting].filter(Boolean).join(' · '))}
+        ${row('Key result', [eff.statistic, eff.effect_size, eff.ci && 'CI ' + eff.ci].filter(Boolean).join(' · '))}
+        ${row('Measures', (p.measures || []).map((m) => [m.construct, m.instrument, m.reliability].filter(Boolean).join(': ')).join(' | '))}
+        ${row('Data / materials', [p.data_availability, p.materials_availability].filter(Boolean).join(' · '))}
+      </table>
+      <p><small>Extracted automatically, so check each detail against the paper. The coach now uses this summary.</small></p>
+      ${sugg.length ? `<details open><summary><strong>Fill ${sugg.length} empty field${sugg.length > 1 ? 's' : ''} with these details</strong></summary>
+        <ul class="prefill">${sugg.map((x, i) => `<li><label class="check"><input type="checkbox" data-sugg="${i}" checked> <span><strong>${esc(x.label)}:</strong> ${esc(x.value.length > 160 ? x.value.slice(0, 160) + '…' : x.value)}</span></label></li>`).join('')}</ul>
+        <button class="btn primary" id="applyPrefill">Fill selected fields</button></details>` : '<p><small>Your matching fields are already filled in.</small></p>'}
+      <p><button class="btn ghost small" id="removePaper">Remove paper</button></p>
+    </div>`;
+}
+function prefillSuggestions() {
+  const p = S.paper; if (!p) return [];
+  const parts = p.participants || {}, eff = p.effect || {};
+  const effText = [eff.effect_size, eff.ci && `95% CI ${eff.ci}`, eff.statistic, parts.n && `N = ${parts.n}`].filter(Boolean).join('; ');
+  const measures = (p.measures || []).map((m) => [m.construct, m.instrument, m.items && `${m.items} items`, m.reliability].filter(Boolean).join(' – ')).join('\n');
+  const list = [
+    ['ws', 'target', 'citation', 'Stage 1 · Target study', p.citation],
+    ['ws', 'target', 'claim', 'Stage 1 · Claim', p.main_claim],
+    ['ws', 'sample', 'orig', 'Stage 6 · Original effect size, CI and N', effText],
+    ['ws', 'measures', 'measures', 'Stage 5 · Key measures', measures],
+    ['ws', 'analysis', 'primary', 'Stage 9 · Primary analysis', p.analysis && `Original analysis: ${p.analysis}`],
+    ['rq', null, 1, 'Recipe 1 · Description of the effect', p.main_claim],
+    ['rq', null, 3, 'Recipe 3 · Original effect size', eff.effect_size],
+    ['rq', null, 4, 'Recipe 4 · Confidence interval', eff.ci],
+    ['rq', null, 5, 'Recipe 5 · Original sample size', parts.n],
+    ['rq', null, 6, 'Recipe 6 · Where the study was run', parts.setting],
+    ['rq', null, 7, 'Recipe 7 · Country / region', parts.country],
+    ['rq', null, 8, 'Recipe 8 · Kind of sample', parts.population],
+    ['rq', null, 9, 'Recipe 9 · Paper or computer', parts.mode]
+  ];
+  return list.filter(([kind, sid, fid, , v]) => v && typeof v === 'string' && !/^null$/i.test(v.trim())
+    && !(kind === 'ws' ? (S.worksheets[sid] || {})[fid] : S.recipe[fid]))
+    .map(([kind, sid, fid, label, value]) => ({ kind, sid, fid, label, value: String(value).trim() }));
+}
+function bindPaperCard() {
+  const input = $('#paperFile');
+  if (input) input.addEventListener('change', async () => {
+    const f = input.files[0]; if (!f) return;
+    const max = (CONFIG.maxPdfMb || 15) * 1024 * 1024;
+    if (f.size > max) { $('#paperStatus').textContent = `That PDF is over ${CONFIG.maxPdfMb || 15} MB.`; return; }
+    $('#paperStatus').textContent = 'Reading the paper… this takes about 30–60 seconds.';
+    $('.file-btn').classList.add('disabled');
+    try {
+      const b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(f); });
+      const headers = { 'content-type': 'application/json' };
+      if (apiKey()) headers['x-user-api-key'] = apiKey();
+      const r = await fetch('/api/analyze-paper', { method: 'POST', headers, body: JSON.stringify({ pdfBase64: b64, sessionId: S.sessionId, participant: S.participant, consent: S.consent, accessCode: S.accessCode }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || 'Upload failed');
+      S.paper = d.summary; save(); render();
+    } catch (err) {
+      $('#paperStatus').textContent = err.message;
+      $('.file-btn')?.classList.remove('disabled');
+    }
+  });
+  $('#applyPrefill')?.addEventListener('click', () => {
+    const sugg = prefillSuggestions(); const applied = [];
+    $$('[data-sugg]').forEach((cb) => {
+      if (!cb.checked) return; const x = sugg[Number(cb.dataset.sugg)]; if (!x) return;
+      if (x.kind === 'ws') (S.worksheets[x.sid] ||= {})[x.fid] = x.value; else S.recipe[x.fid] = x.value;
+      applied.push(x.label);
+    });
+    save(); render(); track('prefill', 'target', { applied });
+    toast(`Filled ${applied.length} field${applied.length === 1 ? '' : 's'}. Check them against the paper as you go.`);
+  });
+  $('#removePaper')?.addEventListener('click', () => { if (confirm('Remove the paper summary? Fields already filled stay as they are.')) { S.paper = null; save(); render(); } });
 }
 
 function renderRecipe() {
@@ -291,6 +447,47 @@ function renderSurvey() {
   });
 }
 
+function renderFinish() {
+  const rows = K.stages.map((s) => {
+    const { done, total } = stageProgress(s);
+    const filled = s.fields.filter(visible).filter((f) => { const v = (S.worksheets[s.id] || {})[f.id]; return Array.isArray(v) ? v.length : v; }).length;
+    const nf = s.fields.filter(visible).length;
+    const note = stageOptional(s) ? 'optional for you' : s.id === 'report' ? 'after data collection' : '';
+    return `<tr><td><a href="#" data-view="stage:${s.id}">${s.n}. ${esc(s.title)}</a>${note ? ` <small>(${note})</small>` : ''}</td><td>${filled} / ${nf}</td><td>${done} / ${total}</td></tr>`;
+  }).join('');
+  $('#main').innerHTML = `
+    <div class="eyebrow">You're done for now</div>
+    <h1>Finish &amp; download</h1>
+    <p class="goal">Well done. Here is everything you need to take your replication forward. Download your documents now: your work is only saved in this browser.</p>
+    <div class="grid2">
+      <div class="card action-card">
+        <h3>1. Your replication plan</h3>
+        <p>A formatted Word document with all your worksheet answers, checklists and the evidence behind them. Share it with your supervisor.</p>
+        <button class="btn primary" id="finishPlan">Download plan (.docx)</button>
+      </div>
+      <div class="card action-card">
+        <h3>2. Draft preregistration</h3>
+        <p>Your answers turned into a preregistration in the Replication Recipe format. Gaps are highlighted for you to complete before registering on OSF.</p>
+        <button class="btn primary" data-prereg>Download preregistration (.docx)</button>
+      </div>
+    </div>
+    <h2>How complete is your plan?</h2>
+    <div class="card"><table class="kv progress-table"><thead><tr><th>Stage</th><th>Fields answered</th><th>Checklist</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <h2>Next steps</h2>
+    <div class="card"><ol class="next-steps">
+      <li>Discuss your plan with your supervisor or an expert, especially stages 1, 6 and 9.</li>
+      <li>Complete the highlighted gaps in the preregistration and register it on <a href="https://osf.io/registries" target="_blank" rel="noopener">OSF Registries</a> (or submit a Registered Report).</li>
+      <li>If you haven't yet, email the original authors (templates in Stage 3).</li>
+      <li>After data collection, come back to Stage 10 to interpret and report your results, and log them in <a href="https://forrt-replications.shinyapps.io/fred_explorer/" target="_blank" rel="noopener">FReD</a>.</li>
+    </ol>
+    <p><small>To continue later on another device, <a href="#" id="finishBackup">download a backup file</a> and import it there via Settings.</small></p></div>
+    <h2>Help us improve</h2>
+    <div class="card"><p>Please take 4 minutes to tell us what worked and what didn't. Your feedback directly shapes the next version.</p><button class="btn" data-view="survey">Give feedback →</button></div>`;
+  $('#coachStage').textContent = 'Finish';
+  $('#finishPlan').addEventListener('click', exportPlan);
+  $('#finishBackup').addEventListener('click', (e) => { e.preventDefault(); downloadBackup(); });
+}
+
 function renderAbout() {
   $('#main').innerHTML = `
     <div class="eyebrow">About</div>
@@ -315,43 +512,75 @@ function renderChat() {
   const chat = $('#chat');
   if (!msgs.length) {
     const st = currentStage();
-    chat.innerHTML = `<p class="empty-chat">${st ? `Hi! I'm your coach for <strong>${esc(st.title)}</strong>. Start with <em>Explain this stage</em>, or fill in the worksheet and ask me to <em>Review</em> it.` : 'Ask me anything about planning your replication.'}</p>`;
+    chat.innerHTML = `<div class="empty-chat">${st ? `<p>Hi! I'm your coach for <strong>${esc(st.title)}</strong>. I can see your worksheet${S.paper ? ' and the paper you uploaded' : ''}.</p><p>Ask me a specific question about your study, or fill in the worksheet and press <em>Review my worksheet</em>.</p>${(STARTERS[st.id] || []).map((q) => `<button class="starter" data-starter="${esc(q)}">${esc(q)}</button>`).join('')}` : '<p>Ask me anything about planning your replication.</p>'}</div>`;
     return;
   }
   chat.innerHTML = msgs.map((m, i) => {
-    if (m.role === 'user') return `<div class="msg user">${esc(m.display || m.content)}</div>`;
+    if (m.role === 'user') return m.hidden ? '' : `<div class="msg user">${esc(m.display || m.content)}</div>`;
     if (m.role === 'error') return `<div class="msg error">${esc(m.content)}</div>`;
     const r = S.msgRatings[m.id];
-    return `<div class="msg assistant">${renderMarkdown(m.content)}
+    const cont = m.stop === 'max_tokens' && i === msgs.length - 1 ? '<button class="btn small" data-continue>Continue ↓</button>' : '';
+    return `<div class="msg assistant">${renderMarkdown(m.content)}${cont}
       <div class="msg-tools">Helpful? <button data-rate="up" data-i="${i}" class="${r === 'up' ? 'on' : ''}">👍</button><button data-rate="down" data-i="${i}" class="${r === 'down' ? 'on' : ''}">👎</button>
       ${m.unknown?.length ? `<span>⚠ ${m.unknown.length} citation(s) not in evidence base</span>` : ''}</div></div>`;
   }).join('');
   chat.scrollTop = chat.scrollHeight;
 }
 
+const STARTERS = {
+  target: ['How do I find out if this study has already been replicated?', 'Is my reason for choosing this study strong enough?'],
+  aim: ['Should we do a close or a conceptual replication?', 'Which replication goal fits what we want to show?'],
+  materials: ['What should we ask the original authors for?', 'Some materials are missing. What can we do?'],
+  reproduce: ['Do we need to reproduce the analysis if we have no data?', 'What is a seed and do we need one?'],
+  measures: ['Is Cronbach\'s alpha enough to show our measure works?', 'We are translating the questionnaire. What should we check?'],
+  sample: ['How do we find the original effect size?', 'How many participants do we need, roughly?'],
+  differences: ['Which differences from the original matter most?'],
+  prereg: ['Where should we preregister?', 'What exclusion rules are sensible for our study?'],
+  analysis: ['How do we decide if the replication succeeded?', 'Our result might be non-significant. What then?'],
+  report: ['How do we describe a failed replication fairly?']
+};
+
 let busy = false;
-async function ask({ text, mode }) {
+async function ask({ text, mode, cont }) {
   if (busy) return;
   const key = chatKey();
   const msgs = (S.chats[key] ||= []);
-  const label = mode ? $(`[data-mode="${mode}"]`)?.textContent : null;
-  if (text) msgs.push({ role: 'user', content: text });
+  const label = mode ? ($(`[data-mode="${mode}"]`)?.textContent || mode) : null;
+  if (cont) msgs.push({ role: 'user', content: 'Please continue exactly where you stopped.', display: 'Continue', hidden: true });
+  else if (text) msgs.push({ role: 'user', content: text });
   else if (mode) msgs.push({ role: 'user', content: `[${label}]`, display: label, mode });
   renderChat();
   busy = true; $('#sendBtn').disabled = true;
-  $('#chat').insertAdjacentHTML('beforeend', '<p class="typing" id="typing">Coach is thinking…</p>');
+  $('#chat').insertAdjacentHTML('beforeend', '<div class="msg assistant live" id="liveMsg"><p class="typing">Coach is thinking…</p></div>');
   $('#chat').scrollTop = $('#chat').scrollHeight;
 
-  const history = msgs.filter((m) => m.role === 'user' || m.role === 'assistant').filter((m) => !m.mode || m !== msgs[msgs.length - 1]).map((m) => ({ role: m.role, content: m.mode ? `(I pressed "${m.display}")` : m.content }));
+  const last = msgs[msgs.length - 1];
+  const history = msgs.filter((m) => (m.role === 'user' || m.role === 'assistant') && !(m.mode && m === last))
+    .map((m) => ({ role: m.role, content: m.mode ? `(I pressed "${m.display}")` : m.content }));
   const worksheet = key === 'recipe' ? { replicationRecipe: S.recipe } : { thisStage: S.worksheets[key] || {}, ratings: S.ratings[key] || {}, earlierStages: summariseEarlier(key) };
+  const reply = { role: 'assistant', content: '', id: uid(), unknown: [] };
   try {
     const headers = { 'content-type': 'application/json' };
     if (apiKey()) headers['x-user-api-key'] = apiKey();
-    const r = await fetch('/api/coach', { method: 'POST', headers, body: JSON.stringify({ stageId: currentStage()?.id || 'target', mode, messages: history, worksheet, sessionId: S.sessionId, participant: S.participant, consent: S.consent, accessCode: S.accessCode }) });
-    const data = await r.json();
-    if (!r.ok) throw new Error(data.error || 'Request failed');
-    msgs.push({ role: 'assistant', content: data.text, id: uid(), unknown: data.citations?.unknown || [] });
+    const r = await fetch('/api/coach', { method: 'POST', headers, body: JSON.stringify({ stageId: currentStage()?.id || 'target', mode, messages: history, worksheet, profile: S.profile, paper: S.paper, sessionId: S.sessionId, participant: S.participant, consent: S.consent, accessCode: S.accessCode }) });
+    if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error(d.error || 'Request failed'); }
+    const reader = r.body.getReader(); const dec = new TextDecoder(); let buf = ''; let frame = null;
+    const paint = () => { frame = null; const el = $('#liveMsg'); if (el) { el.innerHTML = renderMarkdown(reply.content) || '<p class="typing">Coach is thinking…</p>'; const c = $('#chat'); if (c.scrollHeight - c.scrollTop - c.clientHeight < 120) c.scrollTop = c.scrollHeight; } };
+    for (;;) {
+      const { value, done } = await reader.read(); if (done) break;
+      buf += dec.decode(value, { stream: true }); let i;
+      while ((i = buf.indexOf('\n')) >= 0) {
+        const line = buf.slice(0, i); buf = buf.slice(i + 1); if (!line.trim()) continue;
+        const ev = JSON.parse(line);
+        if (ev.type === 'delta') { reply.content += ev.text; if (!frame) frame = requestAnimationFrame(paint); }
+        else if (ev.type === 'done') { reply.unknown = ev.citations?.unknown || []; reply.stop = ev.stop; }
+        else if (ev.type === 'error') throw new Error(ev.error);
+      }
+    }
+    if (!reply.content) throw new Error('The coach returned an empty answer. Please try again.');
+    msgs.push(reply);
   } catch (err) {
+    if (reply.content) { reply.stop = 'max_tokens'; msgs.push(reply); }
     msgs.push({ role: 'error', content: err.message });
   } finally {
     busy = false; $('#sendBtn').disabled = false; save(); renderChat();
@@ -379,31 +608,23 @@ function openCard(id) {
 }
 
 // ---------- export / import ----------
-function exportPlan() {
-  const lines = [`# Replication plan`, '', `Generated with Replication Navigator (${new Date().toISOString().slice(0, 10)}). Participant: ${S.participant || '—'}`, ''];
-  const cited = new Set();
-  for (const s of K.stages) {
-    const ws = S.worksheets[s.id] || {}, rt = S.ratings[s.id] || {}, ticks = S.checklist[s.id] || [];
-    lines.push(`## ${s.n}. ${s.title}`, '');
-    for (const f of s.fields) {
-      const v = Array.isArray(ws[f.id]) ? ws[f.id].join('; ') : ws[f.id];
-      lines.push(`**${f.label}**${rt[f.id] ? ` (rating ${rt[f.id]}/5)` : ''}`, '', v ? String(v) : '_(not yet completed)_', '');
-    }
-    lines.push('**Checklist**', '');
-    s.checklist.forEach((c, i) => { lines.push(`- [${ticks[i] ? 'x' : ' '}] ${c.text} (${c.cards.join(', ')})`); c.cards.forEach((x) => cited.add(x)); });
-    lines.push('');
-  }
-  if (Object.values(S.recipe).some(Boolean)) {
-    lines.push('## Replication Recipe (Brandt et al., 2014)', '');
-    K.recipe.forEach((q) => { if (S.recipe[q.n]) lines.push(`${q.n}. ${q.text}`, `   ${S.recipe[q.n]}`, ''); });
-  }
-  lines.push('## Evidence cards referenced', '');
-  [...cited].sort().forEach((id) => { const c = cardById.get(id); lines.push(`- **${id}**: ${c.title} (${cardLabel(c)})`); });
-  lines.push('', '## Sources', '');
-  K.sources.forEach((s) => lines.push(`- ${s.citation} ${s.url}`));
-  download(`replication-plan-${S.participant || 'draft'}.md`, lines.join('\n'), 'text/markdown');
-  download(`replication-plan-${S.participant || 'draft'}.json`, JSON.stringify({ app: 'replication-navigator', version: 1, worksheets: S.worksheets, ratings: S.ratings, checklist: S.checklist, recipe: S.recipe }, null, 1), 'application/json');
-  track('export', null, { worksheets: S.worksheets, ratings: S.ratings, checklist: S.checklist, recipe: S.recipe });
+async function postDownload(url, body, fallbackName) {
+  const r = await fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+  if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || 'Download failed');
+  const blob = await r.blob();
+  const name = (/filename="([^"]+)"/.exec(r.headers.get('Content-Disposition') || '') || [])[1] || fallbackName;
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  return r;
+}
+async function exportPlan() {
+  try {
+    await postDownload('/api/plan', { worksheets: S.worksheets, ratings: S.ratings, checklist: S.checklist, recipe: S.recipe, profile: S.profile, paper: S.paper, participant: S.participant, sessionId: S.sessionId, consent: S.consent }, 'replication-plan.docx');
+    toast('Your replication plan was downloaded as a Word document.');
+  } catch (err) { toast(esc(err.message)); }
+}
+function downloadBackup() {
+  download(`replication-navigator-backup-${(S.participant || 'draft').replace(/[^A-Za-z0-9_-]/g, '')}.json`, JSON.stringify({ app: 'replication-navigator', version: 2, worksheets: S.worksheets, ratings: S.ratings, checklist: S.checklist, recipe: S.recipe, profile: S.profile, paper: S.paper }, null, 1), 'application/json');
 }
 async function exportPrereg() {
   const btns = $$('[data-prereg], #preregBtn');
@@ -418,9 +639,9 @@ async function exportPrereg() {
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     let c = {}; try { c = JSON.parse(r.headers.get('X-Prereg-Counts') || '{}'); } catch { /* ignore */ }
-    if (c.missing !== undefined) alert(`Draft preregistration downloaded.\n\n${c.recipe} answers from your Replication Recipe\n${c.drafted} drafted from your worksheets (please check)\n${c.missing} still to complete (highlighted in yellow)`);
+    if (c.missing !== undefined) toast(`<strong>Draft preregistration downloaded.</strong><br>${c.recipe} answers from your Replication Recipe · ${c.drafted} drafted from your worksheets (please check) · ${c.missing} still to complete (highlighted in yellow)`, 9000);
   } catch (err) {
-    alert(err.message);
+    toast(esc(err.message));
   } finally {
     btns.forEach((b) => { b.disabled = false; });
   }
@@ -452,7 +673,26 @@ $('#welcomeForm').addEventListener('submit', async (e) => {
   $('#welcome').close();
   track('session_start', null, { userAgent: navigator.userAgent.slice(0, 120), width: innerWidth });
   render();
+  if (!S.screened) openScreener();
 });
+
+// ---------- setup screener ----------
+function openScreener() {
+  const f = $('#screenerForm');
+  for (const [k, v] of Object.entries(S.profile || {})) { const el = f.querySelector(`input[name="${k}"][value="${v}"]`); if (el) el.checked = true; }
+  $('#screener').showModal();
+}
+$('#screenerForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const d = Object.fromEntries(new FormData(e.target));
+  S.profile = { level: d.level || 'some', data: d.data || 'unsure', translate: d.translate || 'no', approach: d.approach || 'quantitative' };
+  S.screened = true; save();
+  $('#screener').close();
+  track('screener', null, S.profile);
+  render();
+  toast(`Set up for you. Stages 1–9 should take about ${fmtMin(totalMinutes())}. You can change these answers in Settings.`);
+});
+$('#screenerSkip').addEventListener('click', () => { S.screened = true; save(); $('#screener').close(); render(); });
 
 $('#settingsBtn').addEventListener('click', () => {
   $('#setParticipant').value = S.participant; $('#setCode').value = S.accessCode; $('#setKey').value = apiKey();
@@ -463,9 +703,11 @@ $('#saveSettings').addEventListener('click', () => {
   S.participant = $('#setParticipant').value.trim(); S.accessCode = $('#setCode').value.trim();
   setApiKey($('#setKey').value.trim()); S.consent = $('#setConsent').checked; save();
 });
+$('#changeSetup').addEventListener('click', () => { $('#settings').close(); openScreener(); });
+$('#backupBtn').addEventListener('click', downloadBackup);
 $('#resetBtn').addEventListener('click', () => {
   if (!confirm('Clear all your answers, checklist ticks and chats in this browser?')) return;
-  S = { ...defaultState(), participant: S.participant, consent: S.consent, accessCode: S.accessCode, onboarded: true };
+  S = { ...defaultState(), participant: S.participant, consent: S.consent, accessCode: S.accessCode, onboarded: true, profile: S.profile, screened: S.screened };
   save(); $('#settings').close(); render();
 });
 $('#importBtn').addEventListener('click', () => $('#importFile').click());
@@ -475,6 +717,8 @@ $('#importFile').addEventListener('change', async (e) => {
     const d = JSON.parse(await f.text());
     if (d.app !== 'replication-navigator') throw new Error();
     Object.assign(S, { worksheets: d.worksheets || {}, ratings: d.ratings || {}, checklist: d.checklist || {}, recipe: d.recipe || {} });
+    if (d.profile) { S.profile = d.profile; S.screened = true; }
+    if (d.paper) S.paper = d.paper;
     save(); $('#settings').close(); render();
   } catch { alert('That file is not a Replication Navigator plan.'); }
 });
@@ -484,6 +728,19 @@ document.addEventListener('click', (e) => {
   const v = e.target.closest('[data-view]');
   if (v) { e.preventDefault(); go(v.dataset.view); return; }
   if (e.target.closest('[data-prereg]')) { exportPrereg(); return; }
+  const term = e.target.closest('button.term[data-term]');
+  if (term) { openTerm(term.dataset.term); return; }
+  const hb = e.target.closest('[data-help]');
+  if (hb) {
+    const k = hb.dataset.help; const box = document.getElementById('help-' + k.replace('.', '-'));
+    const open = box.hidden; box.hidden = !open; hb.setAttribute('aria-expanded', String(open)); S.openHelp[k] = open; save();
+    if (open) track('help_open', currentStage()?.id, { field: k });
+    return;
+  }
+  if (e.target.closest('[data-show-adv]')) { S.showAdvanced = true; save(); render(); return; }
+  const st = e.target.closest('[data-starter]');
+  if (st) { ask({ text: st.dataset.starter }); openCoachMobile(); return; }
+  if (e.target.closest('[data-continue]')) { ask({ cont: true }); return; }
   const c = e.target.closest('button.cite[data-card]');
   if (c) { openCard(c.dataset.card); return; }
   const m = e.target.closest('[data-mode]');
@@ -527,6 +784,8 @@ $('#coachClose').addEventListener('click', () => $('#coach').classList.remove('o
   }
   cardById = new Map(K.cards.map((c) => [c.id, c]));
   sourceByKey = new Map(K.sources.map((s) => [s.key, s]));
+  initGlossary();
   render();
   if (!S.onboarded) openWelcome();
+  else if (!S.screened) openScreener();
 })();
