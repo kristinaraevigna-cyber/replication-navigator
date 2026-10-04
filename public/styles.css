@@ -239,3 +239,5 @@ table.kv th { width: 28%; color: var(--muted); font-weight: 600; }
 .consent-more { font-size: .85rem; color: var(--muted); margin: 0; }
 .team-badge { margin: 0; font-size: .9rem; color: var(--ok); font-weight: 600; }
 .btn.big { padding: 10px 22px; font-size: 1rem; }
+
+a.side-link { text-decoration: none; display: block; }

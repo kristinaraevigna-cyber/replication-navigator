@@ -70,6 +70,10 @@ A four-question **setup screener** (experience, data availability, translation, 
 
 Stages 1, 6 and 9 are **expert check-points**. Beyond the stages there is the full 36-question **Replication Recipe**, a **draft preregistration export** (a Word document in the Replication Recipe format, filled from the team's Recipe answers and, where those are blank, from their stage worksheets, with remaining gaps highlighted), a searchable **Evidence base**, an in-app **feedback survey** (SUS plus items on the coach), and **export** of the finished plan as Markdown and JSON.
 
+## User guide
+
+A Word user guide is linked from the app's sidebar (`public/docs/Replication-Navigator-User-Guide.docx`). It is generated from the knowledge base by `docs/manual/build.cjs`: run `AUDIENCE=general node docs/manual/build.cjs public/docs/Replication-Navigator-User-Guide.docx`, or leave `AUDIENCE` unset for the OSM summit participant manual.
+
 ## Running locally
 
 ```bash

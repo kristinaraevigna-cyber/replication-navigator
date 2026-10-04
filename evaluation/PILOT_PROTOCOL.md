@@ -60,7 +60,8 @@ The analysis is descriptive: means, SDs and 95% CIs for SUS and the custom items
 ## Ethics and data protection (GDPR)
 
 - Participation in the research part is optional. The tool works fully without consent, and without consent nothing is logged.
-- Only a random browser ID is collected (teams are recorded on paper by the facilitators if needed). Participants are told not to enter their name or personal data in worksheets or chats.
+- Only a random browser ID is collected (teams are recorded on paper by the facilitators if needed).
+- To link exported plans to teams for expert scoring, teams put their team number in the file name when uploading the plan to the shared folder (e.g. `T3-replication-plan.docx`). Participants are told not to enter their name or personal data in worksheets or chats.
 - Logs are stored on the deployment's database (Render, region chosen at setup). They are exported after the pilot, stored at the University, and deleted from the hosting service.
 - Messages to the coach are processed by Anthropic's API. State this in the information sheet, and check your institution's rules for third-party processors.
 - Data retention: define this, e.g. 5 years for pseudonymised data. Plan to share it openly only after checking the free-text for identifying content.
