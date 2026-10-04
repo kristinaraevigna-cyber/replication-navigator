@@ -655,25 +655,33 @@ function download(name, content, type) {
 
 // ---------- onboarding & settings ----------
 function openWelcome() {
-  $('#codeRow').hidden = !CONFIG.requiresAccessCode;
-  $('#participantInput').value = S.participant;
+  $('#codeRow').hidden = !CONFIG.requiresAccessCode || Boolean(S.accessCode);
+  $('#teamBadge').hidden = !S.participant;
+  $('#teamBadge').textContent = S.participant ? `Team: ${S.participant}` : '';
   $('#welcome').showModal();
 }
+$('#consentMore').addEventListener('click', (e) => { e.preventDefault(); $('#consentText').hidden = !$('#consentText').hidden; });
 $('#welcomeForm').addEventListener('submit', async (e) => {
   e.preventDefault();
-  const code = $('#codeInput').value.trim();
-  if (CONFIG.requiresAccessCode && code) {
-    const r = await fetch('/api/check-code', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ code }) }).then((x) => x.json()).catch(() => ({ ok: false }));
-    if (!r.ok) { $('#welcomeError').textContent = 'That access code is not correct.'; return; }
+  const code = CONFIG.requiresAccessCode ? (S.accessCode || $('#codeInput').value.trim()) : '';
+  if (CONFIG.requiresAccessCode) {
+    const r = code ? await fetch('/api/check-code', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ code }) }).then((x) => x.json()).catch(() => ({ ok: false })) : { ok: false };
+    if (!r.ok) {
+      $('#codeRow').hidden = false; S.accessCode = '';
+      $('#welcomeError').textContent = code ? 'That access code is not correct.' : 'Please enter the workshop access code (you can also add it later in Settings).';
+      return;
+    }
   }
-  S.participant = $('#participantInput').value.trim();
+  const d = Object.fromEntries(new FormData(e.target));
   S.accessCode = code;
-  S.consent = new FormData(e.target).get('consent') === 'yes';
+  S.profile = { level: d.level || 'some', data: d.data || 'unsure', translate: d.translate || 'no', approach: d.approach || 'quantitative' };
+  S.screened = true;
+  S.consent = $('#consentBox').checked;
   S.onboarded = true; save();
   $('#welcome').close();
-  track('session_start', null, { userAgent: navigator.userAgent.slice(0, 120), width: innerWidth });
+  track('session_start', null, { userAgent: navigator.userAgent.slice(0, 120), width: innerWidth, viaLink: Boolean(LINK.code || LINK.team) });
+  track('screener', null, S.profile);
   render();
-  if (!S.screened) openScreener();
 });
 
 // ---------- setup screener ----------
@@ -774,8 +782,12 @@ $('#coachOpen').addEventListener('click', () => $('#coach').classList.add('open'
 $('#coachClose').addEventListener('click', () => $('#coach').classList.remove('open'));
 
 // ---------- boot ----------
+const LINK = (() => { try { const q = new URLSearchParams(location.search); return { code: q.get('code') || '', team: (q.get('team') || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 20) }; } catch { return {}; } })();
 (async function boot() {
   load();
+  if (LINK.code) S.accessCode = LINK.code;
+  if (LINK.team) S.participant = LINK.team;
+  if (LINK.code || LINK.team) { save(); history.replaceState(null, '', location.pathname); }
   try {
     [CONFIG, K] = await Promise.all([fetch('/api/config').then((r) => r.json()), fetch('/api/knowledge').then((r) => r.json())]);
   } catch {

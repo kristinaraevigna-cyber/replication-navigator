@@ -81,26 +81,29 @@
     </form>
   </dialog>
 
-  <!-- Onboarding / consent -->
+  <!-- Onboarding: one screen -->
   <dialog id="welcome" class="dialog">
     <form class="dialog-inner" id="welcomeForm">
-      <h2>Welcome to Replication Navigator</h2>
-      <p>This tool walks you step by step through planning a replication. Each stage explains what to decide in plain language, gives you a short worksheet and checklist, and has an AI coach you can ask questions. The coach only uses a curated evidence base of nine key sources on replication, and cites where each piece of advice comes from.</p>
-      <p class="time-hint"><strong>Time:</strong> about 1½–2 hours for stages 1–9 (less if some stages don't apply to you). At the end you download your plan and a draft preregistration. Your work is saved in this browser, so you can stop and come back on the same device.</p>
-      <label>Team or participant code <small>(pseudonymous, e.g. T3-P2; don't use your name)</small>
-        <input id="participantInput" autocomplete="off" maxlength="40">
+      <h2>Plan your replication, step by step</h2>
+      <p>Replication Navigator guides you through 10 short stages, with an AI coach that only uses published guidance on replication. At the end you download your plan and a draft preregistration.</p>
+      <p class="time-hint">About <strong>1½ hours</strong> · saved automatically in this browser</p>
+      <h3 class="ob-h">Tell us a bit about you <small>(so we can skip what you don't need)</small></h3>
+      <div class="seg-q"><span>Experience with replication</span>
+        <div class="seg"><label><input type="radio" name="level" value="new" checked><span>New to it</span></label><label><input type="radio" name="level" value="some"><span>Some</span></label><label><input type="radio" name="level" value="expert"><span>Experienced</span></label></div></div>
+      <div class="seg-q"><span>Original data available?</span>
+        <div class="seg"><label><input type="radio" name="data" value="yes"><span>Yes</span></label><label><input type="radio" name="data" value="no"><span>No</span></label><label><input type="radio" name="data" value="unsure" checked><span>Not sure</span></label></div></div>
+      <div class="seg-q"><span>Translating materials?</span>
+        <div class="seg"><label><input type="radio" name="translate" value="yes"><span>Yes</span></label><label><input type="radio" name="translate" value="no" checked><span>No</span></label></div></div>
+      <div class="seg-q"><span>Type of study</span>
+        <div class="seg"><label><input type="radio" name="approach" value="quantitative" checked><span>Quantitative</span></label><label><input type="radio" name="approach" value="qualitative"><span>Qualitative</span></label></div></div>
+      <label id="codeRow" class="ob-code">Workshop access code
+        <input id="codeInput" autocomplete="off" placeholder="e.g. OSM2026">
       </label>
-      <label id="codeRow">Workshop access code
-        <input id="codeInput" autocomplete="off">
-      </label>
-      <fieldset class="consent">
-        <legend>Research participation (optional)</legend>
-        <p>We are evaluating this tool for a methods paper. If you agree, we log your interactions with your pseudonymous code: coach messages, checklist ticks, ratings and survey answers. Your worksheet answers are logged only when you export your plan. You can use the tool fully without agreeing.</p>
-        <label class="check"><input type="radio" name="consent" value="yes"> I agree to my pseudonymous usage data being logged for research.</label>
-        <label class="check"><input type="radio" name="consent" value="no" checked> I do not agree. Please don't log my data.</label>
-      </fieldset>
+      <p id="teamBadge" class="team-badge" hidden></p>
+      <label class="check consent-line"><input type="checkbox" id="consentBox"> <span>Help our research: log my anonymous usage. <a href="#" id="consentMore">What's logged?</a></span></label>
+      <p class="consent-more" id="consentText" hidden>We are evaluating this tool for a methods paper. If you tick this, we log coach messages, checklist ticks, ratings, survey answers and your exported plan, linked only to a random ID (and your team code if you came via a team link). We never ask for your name. You can change this any time in Settings, and the tool works fully either way.</p>
       <p class="error" id="welcomeError"></p>
-      <div class="dialog-actions"><button class="btn primary" type="submit">Start</button></div>
+      <div class="dialog-actions"><button class="btn primary big" type="submit">Start →</button></div>
     </form>
   </dialog>
 
@@ -108,7 +111,7 @@
   <dialog id="settings" class="dialog">
     <form method="dialog" class="dialog-inner">
       <h2>Settings</h2>
-      <label>Participant code <input id="setParticipant" maxlength="40"></label>
+      <label>Team code <small>(optional, e.g. T3)</small> <input id="setParticipant" maxlength="40"></label>
       <label>Workshop access code <input id="setCode"></label>
       <label id="byoRow">Your own Anthropic API key <small>(optional; kept in this browser tab only)</small>
         <input id="setKey" type="password" autocomplete="off" placeholder="sk-ant-…">

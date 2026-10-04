@@ -6,9 +6,9 @@
 
 **What would I do?** Use the tool in your team for about 90 minutes, then complete a short (about 4-minute) feedback survey.
 
-**Is participation in the research voluntary?** Yes. When you start, you choose whether your usage may be logged. You can use the tool fully either way. You can change your choice in Settings at any time.
+**Is participation in the research voluntary?** Yes. When you start, you choose whether to tick the box that allows your usage to be logged. You can use the tool fully either way. You can change your choice in Settings at any time.
 
-**What is logged if I agree?** Your pseudonymous code (e.g. T3-P2), messages you send to the AI coach and its replies, checklist ticks, ratings of replies, citations you open or flag, your survey answers, and your exported plan. We do **not** collect your name or email. Please don't type personal information into the tool.
+**What is logged if I agree?** A random ID created by your browser (and your team code, if you used a team link), messages you send to the AI coach and its replies, checklist ticks, ratings of replies, citations you open or flag, your survey answers, and your exported plan. We do **not** collect your name or email. Please don't type personal information into the tool.
 
 **Who processes the data?** The app runs on Render (hosting). Messages to the coach are processed by Anthropic's API to generate replies. If you upload the paper you are replicating, it is sent to Anthropic's API once to extract key details and is not stored by us. Research logs are exported after the session and stored securely by the research team at [institution].
 

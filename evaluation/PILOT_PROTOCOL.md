@@ -21,7 +21,7 @@ A single-session, mixed-methods usability and feasibility pilot. There is no con
 
 | time | activity |
 |---|---|
-| 0–10 | Introduction; information sheet; consent; participants enter a pseudonymous code (T#-P#) |
+| 0–10 | Introduction; information sheet; participants scan their team's QR link (fills in access code and team), answer the four start questions and choose whether to consent |
 | 10–20 | Demo of one stage and of how to check a citation |
 | 20–95 | Teams work through stages 1–9 on their target study; experts visit at check-points 1, 6 and 9 |
 | 95–105 | Each team exports its plan and submits it (the export is logged automatically if they consented) |
@@ -60,7 +60,7 @@ The analysis is descriptive: means, SDs and 95% CIs for SUS and the custom items
 ## Ethics and data protection (GDPR)
 
 - Participation in the research part is optional. The tool works fully without consent, and without consent nothing is logged.
-- Only pseudonymous codes are collected. Participants are told not to enter their name or personal data in worksheets or chats.
+- Only a random browser ID and a team code are collected. Participants are told not to enter their name or personal data in worksheets or chats.
 - Logs are stored on the deployment's database (Render, region chosen at setup). They are exported after the pilot, stored at the University, and deleted from the hosting service.
 - Messages to the coach are processed by Anthropic's API. State this in the information sheet, and check your institution's rules for third-party processors.
 - Data retention: define this, e.g. 5 years for pseudonymised data. Plan to share it openly only after checking the free-text for identifying content.
