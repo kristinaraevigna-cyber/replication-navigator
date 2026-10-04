@@ -111,8 +111,8 @@
   <dialog id="settings" class="dialog">
     <form method="dialog" class="dialog-inner">
       <h2>Settings</h2>
-      <label>Team code <small>(optional, e.g. T3)</small> <input id="setParticipant" maxlength="40"></label>
-      <label>Workshop access code <input id="setCode"></label>
+      <label hidden>Team code <input id="setParticipant" maxlength="40"></label>
+      <label id="setCodeRow">Workshop access code <input id="setCode"></label>
       <label id="byoRow">Your own Anthropic API key <small>(optional; kept in this browser tab only)</small>
         <input id="setKey" type="password" autocomplete="off" placeholder="sk-ant-…">
       </label>

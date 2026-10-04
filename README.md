@@ -90,12 +90,14 @@ See [`docs/DEPLOY.md`](docs/DEPLOY.md). In short: push this repo to GitHub, then
 | variable | default | meaning |
 |---|---|---|
 | `ANTHROPIC_API_KEY` | — | server key used by participants who enter the access code |
-| `ACCESS_CODE` | — | workshop code; if empty, anyone can use the server key |
+| `ACCESS_CODE` | — | optional workshop code; leave empty for open access (anyone can use the server key, within the rate limits and daily caps) |
 | `ALLOW_BYO_KEY` | `true` | lets visitors use their own Anthropic key (kept only in their browser tab) |
 | `ANTHROPIC_MODEL` | `claude-sonnet-4-5` | model id; check the Anthropic docs for current models |
 | `MAX_TOKENS` | `1500` | maximum length of each coach reply (replies stream; users can click Continue) |
 | `PAPER_MODEL` | same as `ANTHROPIC_MODEL` | model used to read uploaded papers |
 | `MAX_PDF_MB` | `15` | largest PDF that can be uploaded |
+| `DAILY_COACH_CAP` | `3000` | maximum coach replies per day on the server key (safety net for open access) |
+| `DAILY_PAPER_CAP` | `200` | maximum paper uploads per day on the server key |
 | `RATE_PER_HOUR` | `60` | coach requests per session per hour (server key only) |
 | `DATABASE_URL` | — | Postgres for research logs; if not set, logs go to `data/events.jsonl` |
 | `ADMIN_TOKEN` | — | required to download the logs from `/api/admin/export` |

@@ -704,7 +704,7 @@ $('#screenerSkip').addEventListener('click', () => { S.screened = true; save(); 
 
 $('#settingsBtn').addEventListener('click', () => {
   $('#setParticipant').value = S.participant; $('#setCode').value = S.accessCode; $('#setKey').value = apiKey();
-  $('#setConsent').checked = S.consent; $('#byoRow').hidden = !CONFIG.allowByoKey;
+  $('#setConsent').checked = S.consent; $('#byoRow').hidden = !CONFIG.allowByoKey; $('#setCodeRow').hidden = !CONFIG.requiresAccessCode;
   $('#settings').showModal();
 });
 $('#saveSettings').addEventListener('click', () => {

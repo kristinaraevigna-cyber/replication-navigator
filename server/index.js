@@ -20,6 +20,18 @@ const ADMIN_TOKEN = process.env.ADMIN_TOKEN || '';
 const API_BASE = process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com';
 const RATE_PER_HOUR = Number(process.env.RATE_PER_HOUR || 60);
 const MAX_PDF_MB = Number(process.env.MAX_PDF_MB || 15);
+// Daily safety caps on the server key (protects the API budget when the tool is open access).
+const DAILY_COACH_CAP = Number(process.env.DAILY_COACH_CAP || 3000);
+const DAILY_PAPER_CAP = Number(process.env.DAILY_PAPER_CAP || 200);
+const daily = { day: '', coach: 0, paper: 0 };
+function overDailyCap(kind) {
+  const today = new Date().toISOString().slice(0, 10);
+  if (daily.day !== today) Object.assign(daily, { day: today, coach: 0, paper: 0 });
+  const cap = kind === 'paper' ? DAILY_PAPER_CAP : DAILY_COACH_CAP;
+  if (daily[kind] >= cap) return true;
+  daily[kind]++; return false;
+}
+const CAP_MSG = 'The coach has reached its daily limit. Please try again tomorrow, or add your own Anthropic API key in Settings.';
 
 const app = express();
 app.disable('x-powered-by');
@@ -79,6 +91,7 @@ app.post('/api/coach', async (req, res) => {
   const key = resolveKey(req, accessCode);
   if (key.error) return res.status(401).json({ error: key.error });
   if (!key.byo && rateLimited(sessionId)) return res.status(429).json({ error: 'Rate limit reached for this session. Please wait a little and try again.' });
+  if (!key.byo && overDailyCap('coach')) return res.status(429).json({ error: CAP_MSG });
 
   const convo = messages.slice(-16).map((m) => ({ role: m.role === 'assistant' ? 'assistant' : 'user', content: String(m.content || '').slice(0, 8000) })).filter((m) => m.content);
   if (mode && MODE_PROMPTS[mode]) convo.push({ role: 'user', content: MODE_PROMPTS[mode] });
@@ -153,6 +166,7 @@ app.post('/api/analyze-paper', async (req, res) => {
   if (bytes > MAX_PDF_MB * 1024 * 1024) return res.status(413).json({ error: `The PDF is larger than ${MAX_PDF_MB} MB.` });
   if (!Buffer.from(pdfBase64.slice(0, 16), 'base64').toString('latin1').startsWith('%PDF')) return res.status(400).json({ error: 'That file does not look like a PDF.' });
   if (!key.byo && rateLimited(sessionId, 5)) return res.status(429).json({ error: 'Rate limit reached for this session. Please wait a little and try again.' });
+  if (!key.byo && overDailyCap('paper')) return res.status(429).json({ error: CAP_MSG });
 
   const started = Date.now();
   try {
