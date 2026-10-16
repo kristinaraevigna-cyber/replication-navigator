@@ -782,12 +782,26 @@ $('#coachOpen').addEventListener('click', () => $('#coach').classList.add('open'
 $('#coachClose').addEventListener('click', () => $('#coach').classList.remove('open'));
 
 // ---------- boot ----------
-const LINK = (() => { try { const q = new URLSearchParams(location.search); return { code: q.get('code') || '', team: (q.get('team') || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 20) }; } catch { return {}; } })();
+const LINK = (() => { try { const q = new URLSearchParams(location.search); let plan = null; if (q.get('plan')) { try { plan = JSON.parse(decodeURIComponent(escape(atob(q.get('plan').replace(/-/g, '+').replace(/_/g, '/'))))); } catch { plan = null; } } return { code: q.get('code') || '', team: (q.get('team') || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 20), plan }; } catch { return {}; } })();
+// Hand-off from Coverage Map: pre-fill the target and aim worksheets with the claim and the assumption to vary.
+function applyHandoff(plan) {
+  if (!plan || typeof plan !== 'object') return false;
+  const clip = (x, n) => String(x || '').slice(0, n);
+  const t = (S.worksheets.target ||= {}), a = (S.worksheets.aim ||= {});
+  if (!t.citation && plan.citation) t.citation = clip(plan.citation, 400);
+  if (!t.claim && plan.claim) t.claim = clip(plan.claim, 600);
+  if (!t.existing && plan.coverage) t.existing = clip(plan.coverage, 600);
+  if (!a.purpose && plan.assumption) a.purpose = clip(`Test whether the claim holds when this assumption is varied (${plan.dimension || 'assumption'}): ${plan.assumption}`, 700);
+  S.handoff = { from: 'coverage-map', field: clip(plan.field, 120), claim: clip(plan.claimId, 40), assumption: clip(plan.assumptionId, 40), at: new Date().toISOString() };
+  return true;
+}
 (async function boot() {
   load();
   if (LINK.code) S.accessCode = LINK.code;
   if (LINK.team) S.participant = LINK.team;
-  if (LINK.code || LINK.team) { save(); history.replaceState(null, '', location.pathname); }
+  const handed = applyHandoff(LINK.plan);
+  if (LINK.code || LINK.team || handed) { save(); history.replaceState(null, '', location.pathname); }
+  if (handed) setTimeout(() => { try { toast('Pre-filled from Coverage Map: target study, claim and the assumption to test. Check stages 1 and 2.'); } catch {} }, 800);
   try {
     [CONFIG, K] = await Promise.all([fetch('/api/config').then((r) => r.json()), fetch('/api/knowledge').then((r) => r.json())]);
   } catch {
