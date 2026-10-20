@@ -68,6 +68,8 @@ Each stage opens with a plain-language explanation and a time estimate. Fields h
 
 A four-question **setup screener** (experience, data availability, translation, quantitative/qualitative) hides fields and stages that don't apply and tells the coach how much to explain. Teams can **upload the paper they are replicating**: the model extracts key facts (N, effect size, design, measures, setting) to pre-fill worksheets and Replication Recipe questions, and the coach tailors its advice to that study. The PDF is not stored. A **Finish & download** page gives the plan and the draft preregistration as Word documents.
 
+At stage 4 (**Reproduce before you replicate**) you can upload the original paper, even one with several studies, choose R, Python, Stata or SPSS, and get a drafted script per study that rebuilds the variables, runs the models in the order of the paper's tables and prints obtained values next to the paper's targets. Every place where the paper is silent is marked; a person checks and runs it; no data are uploaded.
+
 Stages 1, 6 and 9 are **expert check-points**. Beyond the stages there is the full 36-question **Replication Recipe**, a **draft preregistration export** (a Word document in the Replication Recipe format, filled from the team's Recipe answers and, where those are blank, from their stage worksheets, with remaining gaps highlighted), a searchable **Evidence base**, an in-app **feedback survey** (SUS plus items on the coach), and **export** of the finished plan as Markdown and JSON.
 
 ## User guide

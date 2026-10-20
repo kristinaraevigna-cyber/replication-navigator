@@ -7,6 +7,7 @@ import { initStore, logEvent, exportEvents } from './store.js';
 import { buildPrereg } from './prereg.js';
 import { buildPlan } from './plan.js';
 import { PAPER_PROMPT, parseJsonLoose } from './paper.js';
+import { reproPrompt, LANGS } from './repro.js';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const PORT = process.env.PORT || 3000;
@@ -196,6 +197,36 @@ app.post('/api/analyze-paper', async (req, res) => {
   }
 });
 
+// Reproduction code drafts from the original paper (stage 4). Multi-study aware; the model writes
+// code against reported variables and models; a person checks it. No data are uploaded.
+app.post('/api/repro-code', async (req, res) => {
+  const { pdfBase64, lang = 'r', sessionId = 'anon', participant, consent, accessCode } = req.body || {};
+  const key = resolveKey(req, accessCode);
+  if (key.error) return res.status(401).json({ error: key.error });
+  if (!LANGS[lang]) return res.status(400).json({ error: 'Unknown language.' });
+  if (!pdfBase64 || typeof pdfBase64 !== 'string') return res.status(400).json({ error: 'No PDF received.' });
+  const bytes = Math.floor(pdfBase64.length * 3 / 4);
+  if (bytes > MAX_PDF_MB * 1024 * 1024) return res.status(413).json({ error: `The PDF is larger than ${MAX_PDF_MB} MB.` });
+  if (!Buffer.from(pdfBase64.slice(0, 16), 'base64').toString('latin1').startsWith('%PDF')) return res.status(400).json({ error: 'That file does not look like a PDF.' });
+  if (!key.byo && rateLimited(sessionId, 4)) return res.status(429).json({ error: 'Rate limit reached for this session. Please wait a little and try again.' });
+  if (!key.byo && overDailyCap('paper')) return res.status(429).json({ error: CAP_MSG });
+  const started = Date.now();
+  try {
+    const r = await fetch(`${API_BASE}/v1/messages`, {
+      method: 'POST', headers: anthropicHeaders(key.apiKey),
+      body: JSON.stringify({ model: PAPER_MODEL, max_tokens: 16000, temperature: 0, messages: [{ role: 'user', content: [
+        { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pdfBase64 } },
+        { type: 'text', text: reproPrompt(lang) } ] }] })
+    });
+    const data = await r.json();
+    if (!r.ok) { console.error('[repro] API error', r.status, data?.error?.message); return res.status(502).json({ error: `The AI service could not read this PDF (${r.status}). ${data?.error?.message || ''}`.trim() }); }
+    const text = (data.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('\n');
+    let out; try { out = parseJsonLoose(text); } catch { return res.status(502).json({ error: 'The code draft could not be parsed. Try again, or try a shorter paper.' }); }
+    res.json({ repro: out, lang, truncated: data.stop_reason === 'max_tokens' });
+    if (consent) logEvent({ sessionId, participant, type: 'repro_code', stage: 'reproduce', payload: { latencyMs: Date.now() - started, usage: data.usage, model: data.model, lang, studies: out.studies?.length, truncated: data.stop_reason === 'max_tokens' } });
+  } catch (err) { console.error('[repro] failed', err); res.status(500).json({ error: 'Could not reach the AI service. Please try again.' }); }
+});
+
 const docxHeaders = (res, name) => {
   res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
   res.set('Content-Disposition', `attachment; filename="${name}"`);
@@ -232,7 +263,7 @@ app.post('/api/plan', async (req, res) => {
 });
 
 // Consented interaction events: stage views, checklist ticks, ratings, citation flags, survey, screener.
-const ALLOWED_EVENTS = new Set(['session_start', 'stage_view', 'checklist', 'rating', 'citation_flag', 'citation_open', 'export', 'survey', 'worksheet_snapshot', 'screener', 'help_open', 'prefill', 'finish_view']);
+const ALLOWED_EVENTS = new Set(['session_start', 'stage_view', 'checklist', 'rating', 'citation_flag', 'citation_open', 'export', 'survey', 'worksheet_snapshot', 'screener', 'help_open', 'prefill', 'finish_view', 'repro_code', 'repro_download']);
 app.post('/api/event', (req, res) => {
   const { sessionId, participant, type, stage, payload, consent } = req.body || {};
   if (!consent || !ALLOWED_EVENTS.has(type) || !sessionId) return res.json({ ok: false });

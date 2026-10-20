@@ -192,7 +192,7 @@ function renderStage(stage) {
   };
 
   const checks = stage.checklist.map((c, i) => ({ c, i })).filter(({ c }) => visible(c));
-  const paperCard = stage.id === 'target' ? paperCardHtml() : '';
+  const paperCard = stage.id === 'target' ? paperCardHtml() : stage.id === 'reproduce' ? reproCardHtml() : '';
   const qualNote = P().approach === 'qualitative' && ['target', 'sample', 'analysis'].includes(stage.id)
     ? '<div class="note">You said your study is qualitative. The evidence base is mostly about quantitative replication, so some fields here may not fit. Skip what does not apply and ask the experts.</div>' : '';
 
@@ -250,6 +250,54 @@ function renderStage(stage) {
     track('checklist', stage.id, { item: Number(el.dataset.check), checked: el.checked });
   }));
   if (stage.id === 'target') bindPaperCard();
+  if (stage.id === 'reproduce') bindReproCard();
+}
+
+// ---------- reproduction code (stage 4) ----------
+const REPRO_LANGS = { r: ['R', 'R'], python: ['Python', 'py'], stata: ['Stata do-file', 'do'], spss: ['SPSS syntax', 'sps'] };
+function reproCardHtml() {
+  const R = S.repro;
+  const head = `<h3 style="margin-top:0">Reproduction code from the original paper</h3>
+      <p>Upload the paper you are reproducing (it can contain several studies) and choose your software. The AI reads the paper and drafts a script per study that rebuilds the variables, runs the models in the order of the paper's tables, and prints the obtained values next to the paper's targets. <strong>You check every line</strong>: the draft marks every place where the paper is silent, and the data stay with you; nothing but the PDF is sent.</p>`;
+  if (!R) return `<div class="card upload">${head}
+      <div class="row" style="gap:.6rem;align-items:center;flex-wrap:wrap"><label style="margin:0">Software <select id="reproLang">${Object.entries(REPRO_LANGS).map(([k, [n]]) => `<option value="${k}">${n}</option>`).join('')}</select></label>
+      <label class="file-btn">Choose PDF<input type="file" id="reproFile" accept="application/pdf" hidden></label><span id="reproStatus" class="muted"></span></div>
+      <p><small>Takes 1–3 minutes for a typical paper. The script is a draft for a person to verify, not a result. Use a paper you have legal access to.</small> ${citeChip('forrt2025-01')}</p></div>`;
+  const lang = REPRO_LANGS[R.lang] || REPRO_LANGS.r;
+  return `<div class="card upload">${head}
+    <p><strong>${esc(R.repro.citation || 'Paper')}</strong> · ${lang[0]} · ${R.repro.studies.length} stud${R.repro.studies.length === 1 ? 'y' : 'ies'}${R.truncated ? ' · <span style="color:var(--bad)">the draft was cut off; the last study may be incomplete</span>' : ''}</p>
+    ${R.repro.notes ? `<p class="muted"><small>${esc(R.repro.notes)}</small></p>` : ''}
+    ${R.repro.studies.map((st, i) => `<details ${i === 0 ? 'open' : ''}><summary><strong>${esc(st.label)}</strong> — ${esc(st.design || '')}</summary>
+      <p><small><strong>Data you must obtain:</strong> ${esc(st.data_needed || '')}</small></p>
+      ${st.targets?.length ? `<table class="mini"><tr><th>Where</th><th>Quantity</th><th>Target in paper</th><th>Obtained</th></tr>${st.targets.map((t) => `<tr><td>${esc(t.table)}</td><td>${esc(t.quantity)}</td><td>${esc(t.value)}</td><td><input placeholder="fill after running" data-obt="${i}:${esc(t.table)}|${esc(t.quantity)}" value="${esc((S.reproObtained || {})[`${i}:${t.table}|${t.quantity}`] || '')}"></td></tr>`).join('')}</table>` : ''}
+      ${st.silences?.length ? `<p><small><strong>Where the paper is silent (check these first):</strong></small><ul class="small">${st.silences.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></p>` : ''}
+      ${st.checks?.length ? `<p><small><strong>Before trusting a match:</strong></small><ul class="small">${st.checks.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></p>` : ''}
+      <pre class="code"><code>${esc(st.script || '')}</code></pre>
+      <p><button class="small" data-dl="${i}">Download ${esc(st.label)} (.${lang[1]})</button> <button class="small ghost" data-copy="${i}">Copy</button></p></details>`).join('')}
+    <p><button class="small ghost" id="reproReset">Start over with another PDF</button></p>
+    <p><small>Record what you found in the worksheet below (reproduced exactly, with small differences, or not) and keep the script with your materials. ${citeChip('forrt2025-22')}</small></p></div>`;
+}
+function bindReproCard() {
+  const input = $('#reproFile');
+  if (input) input.addEventListener('change', async () => {
+    const f = input.files[0]; if (!f) return;
+    const max = (CONFIG.maxPdfMb || 15) * 1024 * 1024;
+    if (f.size > max) { $('#reproStatus').textContent = `That PDF is over ${CONFIG.maxPdfMb || 15} MB.`; return; }
+    $('#reproStatus').textContent = 'Reading the paper and drafting the code… 1–3 minutes.'; $('.file-btn')?.classList.add('disabled');
+    try {
+      const b64 = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1]); r.onerror = rej; r.readAsDataURL(f); });
+      const headers = { 'content-type': 'application/json' }; if (apiKey()) headers['x-user-api-key'] = apiKey();
+      const r = await fetch('/api/repro-code', { method: 'POST', headers, body: JSON.stringify({ pdfBase64: b64, lang: $('#reproLang').value, sessionId: S.sessionId, participant: S.participant, consent: S.consent, accessCode: S.accessCode }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.error || 'Upload failed');
+      S.repro = { repro: d.repro, lang: d.lang, truncated: d.truncated, at: new Date().toISOString() }; save(); render();
+      toast(`Drafted code for ${d.repro.studies.length} stud${d.repro.studies.length === 1 ? 'y' : 'ies'}. Check the silences and targets before running.`);
+    } catch (err) { $('#reproStatus').textContent = err.message; $('.file-btn')?.classList.remove('disabled'); }
+  });
+  $('#reproReset')?.addEventListener('click', () => { if (confirm('Discard the drafted scripts?')) { delete S.repro; save(); render(); } });
+  $$('[data-dl]').forEach((b) => b.addEventListener('click', () => { const st = S.repro.repro.studies[Number(b.dataset.dl)]; const ext = (REPRO_LANGS[S.repro.lang] || REPRO_LANGS.r)[1]; const blob = new Blob([st.script || ''], { type: 'text/plain' }); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `reproduce-${st.label.replace(/[^\w]+/g, '_').toLowerCase()}.${ext}`; a.click(); track('repro_download', 'reproduce', { study: st.label, lang: S.repro.lang }); }));
+  $$('[data-copy]').forEach((b) => b.addEventListener('click', async () => { try { await navigator.clipboard.writeText(S.repro.repro.studies[Number(b.dataset.copy)].script || ''); toast('Copied.'); } catch { toast('Could not copy; use Download.'); } }));
+  $$('[data-obt]').forEach((i) => i.addEventListener('input', () => { (S.reproObtained ||= {})[i.dataset.obt] = i.value; save(); }));
 }
 
 // ---------- target paper upload ----------

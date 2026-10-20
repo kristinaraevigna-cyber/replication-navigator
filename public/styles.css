@@ -241,3 +241,7 @@ table.kv th { width: 28%; color: var(--muted); font-weight: 600; }
 .btn.big { padding: 10px 22px; font-size: 1rem; }
 
 a.side-link { text-decoration: none; display: block; }
+
+/* reproduction code */
+pre.code{background:#1D2327;color:#E8EDF0;padding:.8rem 1rem;border-radius:8px;overflow:auto;max-height:420px;font-size:.8rem;line-height:1.45}
+table.mini{font-size:.85rem;width:100%;border-collapse:collapse;margin:.4rem 0}table.mini th,table.mini td{border:1px solid var(--line,#DEDBD2);padding:.3rem .5rem;text-align:left;vertical-align:top}table.mini input{width:100%;font-size:.85rem}
