@@ -761,6 +761,7 @@ $('#saveSettings').addEventListener('click', () => {
 });
 $('#changeSetup').addEventListener('click', () => { $('#settings').close(); openScreener(); });
 $('#backupBtn').addEventListener('click', downloadBackup);
+$('#sideReset')?.addEventListener('click', () => $('#resetBtn').click());
 $('#resetBtn').addEventListener('click', () => {
   if (!confirm('Clear all your answers, checklist ticks and chats in this browser?')) return;
   S = { ...defaultState(), participant: S.participant, consent: S.consent, accessCode: S.accessCode, onboarded: true, profile: S.profile, screened: S.screened };
@@ -836,11 +837,20 @@ function applyHandoff(plan) {
   if (!plan || typeof plan !== 'object') return false;
   const clip = (x, n) => String(x || '').slice(0, n);
   const t = (S.worksheets.target ||= {}), a = (S.worksheets.aim ||= {});
-  if (!t.citation && plan.citation) t.citation = clip(plan.citation, 400);
-  if (!t.claim && plan.claim) t.claim = clip(plan.claim, 600);
-  if (!t.existing && plan.coverage) t.existing = clip(plan.coverage, 600);
-  if (!a.purpose && plan.assumption) a.purpose = clip(`Test whether the claim holds when this assumption is varied (${plan.dimension || 'assumption'}): ${plan.assumption}`, 700);
-  S.handoff = { from: 'coverage-map', field: clip(plan.field, 120), claim: clip(plan.claimId, 40), assumption: clip(plan.assumptionId, 40), at: new Date().toISOString() };
+  // A second hand-off for a different prediction replaces the first (after asking), so planning
+  // several tests from the map in a row does not keep showing the first one.
+  const same = S.handoff && S.handoff.claim && S.handoff.claim === clip(plan.claimId, 40) && S.handoff.assumption === clip(plan.assumptionId, 40);
+  const hasWork = Object.values(S.worksheets || {}).some((w) => Object.values(w || {}).some((v) => v && String(v).trim()));
+  let replace = true;
+  if (hasWork && !same) replace = confirm('This browser already holds a plan. Replace it with the test handed over from Evidence Atlas?\n\nOK: start a fresh plan for the new test (export the old one first if you want to keep it).\nCancel: keep the current plan and only fill empty fields.');
+  if (replace && hasWork && !same) { S = { ...defaultState(), participant: S.participant, consent: S.consent, accessCode: S.accessCode, onboarded: true, profile: S.profile, screened: S.screened }; }
+  const T = (S.worksheets.target ||= {}), A = (S.worksheets.aim ||= {});
+  const set = (o, k, v) => { if (v && (replace || !o[k])) o[k] = v; };
+  set(T, 'citation', clip(plan.citation, 400)); set(T, 'claim', clip(plan.claim, 600)); set(T, 'existing', clip(plan.coverage, 600));
+  set(A, 'purpose', plan.assumption ? clip(`Test whether the claim holds when this assumption is varied (${plan.dimension || 'assumption'}): ${plan.assumption}`, 700) : '');
+
+  S.handoff = { from: 'evidence-atlas', field: clip(plan.field, 120), claim: clip(plan.claimId, 40), assumption: clip(plan.assumptionId, 40), at: new Date().toISOString() };
+  S.view = 'stage:target';
   return true;
 }
 (async function boot() {
@@ -849,7 +859,7 @@ function applyHandoff(plan) {
   if (LINK.team) S.participant = LINK.team;
   const handed = applyHandoff(LINK.plan);
   if (LINK.code || LINK.team || handed) { save(); history.replaceState(null, '', location.pathname); }
-  if (handed) setTimeout(() => { try { toast('Pre-filled from Coverage Map: target study, claim and the assumption to test. Check stages 1 and 2.'); } catch {} }, 800);
+  if (handed) setTimeout(() => { try { toast('Pre-filled from Evidence Atlas: target study, prediction and the design decision to vary. Check stages 1 and 2.'); } catch {} }, 800);
   try {
     [CONFIG, K] = await Promise.all([fetch('/api/config').then((r) => r.json()), fetch('/api/knowledge').then((r) => r.json())]);
   } catch {
