@@ -284,4 +284,4 @@ app.get('/api/admin/export', async (req, res) => {
 app.get('/healthz', (_req, res) => res.json({ ok: true }));
 
 await initStore();
-app.listen(PORT, () => console.log(`Replication Navigator on http://localhost:${PORT} (model ${MODEL}, ${cards.length} cards, ${sources.length} sources)`));
+app.listen(PORT, () => console.log(`Evidence Navigator on http://localhost:${PORT} (model ${MODEL}, ${cards.length} cards, ${sources.length} sources)`));

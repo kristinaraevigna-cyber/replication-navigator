@@ -1,8 +1,8 @@
-# Participant information: Replication Navigator pilot
+# Participant information: Evidence Navigator pilot
 
 *Template. Adapt it to your institution's ethics requirements before use.*
 
-**What is this?** Replication Navigator is a tool that helps researchers plan replication studies. We are testing it at the OSM Summit, and we'd like to use data from this session in a methods paper.
+**What is this?** Evidence Navigator is a tool that helps researchers plan replication studies. We are testing it at the OSM Summit, and we'd like to use data from this session in a methods paper.
 
 **What would I do?** Use the tool in your team for about 90 minutes, then complete a short (about 4-minute) feedback survey.
 

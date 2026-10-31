@@ -92,20 +92,20 @@ export async function buildPlan({ worksheets = {}, ratings = {}, checklist = {},
   body.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [t('Next steps')] }));
   [
     'Discuss this plan with your supervisor or an expert, especially stages 1, 6 and 9.',
-    'Download the draft preregistration (Replication Navigator → Preregistration), complete the highlighted gaps and register it on OSF.',
+    'Download the draft preregistration (Evidence Navigator → Preregistration), complete the highlighted gaps and register it on OSF.',
     'Contact the original authors if you have not yet done so.',
     'After data collection, return to Stage 10 to interpret and report your results, and log them in FReD.'
   ].forEach((x, i) => body.push(para([t(`${i + 1}. ${x}`)])));
 
   body.push(new Paragraph({ heading: HeadingLevel.HEADING_1, children: [t('Evidence cards referenced')] }));
-  body.push(para([t('Look these up under “Evidence base” in Replication Navigator to see the guidance and the exact quote.', { italics: true, color: MUTED, size: 18 })]));
+  body.push(para([t('Look these up under “Evidence base” in Evidence Navigator to see the guidance and the exact quote.', { italics: true, color: MUTED, size: 18 })]));
   const srcShort = Object.fromEntries(sources.map((x) => [x.key, x.short]));
   [...cited].sort().forEach((id) => { const c = cardById.get(id); if (c) body.push(para([t(`${id}: `, { bold: true, size: 18 }), t(`${c.title} (${srcShort[c.source]}, ${c.printed_page ? 'p. ' + c.printed_page : 'PDF p. ' + c.pdf_page})`, { size: 18 })], { spacing: { after: 30 } })); });
   body.push(new Paragraph({ heading: HeadingLevel.HEADING_2, children: [t('Sources')] }));
   sources.forEach((x) => body.push(para([t(`${x.citation} ${x.url}`, { size: 18 })], { spacing: { after: 40 } })));
 
   const doc = new Document({
-    creator: 'Replication Navigator', title: 'Replication plan',
+    creator: 'Evidence Navigator', title: 'Replication plan',
     styles: {
       default: { document: { run: { font: 'Calibri', size: 22 }, paragraph: { spacing: { line: 276, lineRule: LineRuleType.AUTO } } } },
       paragraphStyles: [
@@ -116,7 +116,7 @@ export async function buildPlan({ worksheets = {}, ratings = {}, checklist = {},
     },
     sections: [{
       properties: { page: { size: { width: PAGE_W, height: 16838 }, margin: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN } } },
-      footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [t('Replication plan · Replication Navigator · page ', { color: MUTED, size: 16 }), new TextRun({ children: [PageNumber.CURRENT], color: MUTED, size: 16 })] })] }) },
+      footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [t('Replication plan · Evidence Navigator · page ', { color: MUTED, size: 16 }), new TextRun({ children: [PageNumber.CURRENT], color: MUTED, size: 16 })] })] }) },
       children: body
     }]
   });
