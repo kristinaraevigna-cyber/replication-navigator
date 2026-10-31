@@ -832,7 +832,7 @@ $('#coachClose').addEventListener('click', () => $('#coach').classList.remove('o
 
 // ---------- boot ----------
 const LINK = (() => { try { const q = new URLSearchParams(location.search); let plan = null; if (q.get('plan')) { try { plan = JSON.parse(decodeURIComponent(escape(atob(q.get('plan').replace(/-/g, '+').replace(/_/g, '/'))))); } catch { plan = null; } } return { code: q.get('code') || '', team: (q.get('team') || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 20), plan }; } catch { return {}; } })();
-// Hand-off from Coverage Map: pre-fill the target and aim worksheets with the claim and the assumption to vary.
+// Hand-off from EpisteMap: pre-fill the target and aim worksheets with the claim and the assumption to vary.
 function applyHandoff(plan) {
   if (!plan || typeof plan !== 'object') return false;
   const clip = (x, n) => String(x || '').slice(0, n);
@@ -842,14 +842,14 @@ function applyHandoff(plan) {
   const same = S.handoff && S.handoff.claim && S.handoff.claim === clip(plan.claimId, 40) && S.handoff.assumption === clip(plan.assumptionId, 40);
   const hasWork = Object.values(S.worksheets || {}).some((w) => Object.values(w || {}).some((v) => v && String(v).trim()));
   let replace = true;
-  if (hasWork && !same) replace = confirm('This browser already holds a plan. Replace it with the test handed over from Evidence Atlas?\n\nOK: start a fresh plan for the new test (export the old one first if you want to keep it).\nCancel: keep the current plan and only fill empty fields.');
+  if (hasWork && !same) replace = confirm('This browser already holds a plan. Replace it with the test handed over from EpisteMap?\n\nOK: start a fresh plan for the new test (export the old one first if you want to keep it).\nCancel: keep the current plan and only fill empty fields.');
   if (replace && hasWork && !same) { S = { ...defaultState(), participant: S.participant, consent: S.consent, accessCode: S.accessCode, onboarded: true, profile: S.profile, screened: S.screened }; }
   const T = (S.worksheets.target ||= {}), A = (S.worksheets.aim ||= {});
   const set = (o, k, v) => { if (v && (replace || !o[k])) o[k] = v; };
   set(T, 'citation', clip(plan.citation, 400)); set(T, 'claim', clip(plan.claim, 600)); set(T, 'existing', clip(plan.coverage, 600));
   set(A, 'purpose', plan.assumption ? clip(`Test whether the claim holds when this assumption is varied (${plan.dimension || 'assumption'}): ${plan.assumption}`, 700) : '');
 
-  S.handoff = { from: 'evidence-atlas', field: clip(plan.field, 120), claim: clip(plan.claimId, 40), assumption: clip(plan.assumptionId, 40), at: new Date().toISOString() };
+  S.handoff = { from: 'epistemap', field: clip(plan.field, 120), claim: clip(plan.claimId, 40), assumption: clip(plan.assumptionId, 40), at: new Date().toISOString() };
   S.view = 'stage:target';
   return true;
 }
@@ -859,7 +859,7 @@ function applyHandoff(plan) {
   if (LINK.team) S.participant = LINK.team;
   const handed = applyHandoff(LINK.plan);
   if (LINK.code || LINK.team || handed) { save(); history.replaceState(null, '', location.pathname); }
-  if (handed) setTimeout(() => { try { toast('Pre-filled from Evidence Atlas: target study, prediction and the design decision to vary. Check stages 1 and 2.'); } catch {} }, 800);
+  if (handed) setTimeout(() => { try { toast('Pre-filled from EpisteMap: target study, prediction and the design decision to vary. Check stages 1 and 2.'); } catch {} }, 800);
   try {
     [CONFIG, K] = await Promise.all([fetch('/api/config').then((r) => r.json()), fetch('/api/knowledge').then((r) => r.json())]);
   } catch {
