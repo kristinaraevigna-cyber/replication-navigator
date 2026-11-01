@@ -10,7 +10,7 @@ No coding is needed. It takes about 20 minutes.
    - **Easiest:** on the empty repo page, click **uploading an existing file** and drag in everything from this folder *except* `node_modules` and `data` (if present).
    - **Or with the terminal**, from inside this folder:
      ```bash
-     git init && git add . && git commit -m "Evidence Navigator v0.1"
+     git init && git add . && git commit -m "Empirical Navigator v0.1"
      git branch -M main
      git remote add origin https://github.com/<your-username>/replication-navigator.git
      git push -u origin main

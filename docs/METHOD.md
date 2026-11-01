@@ -1,6 +1,6 @@
 # Design and method
 
-This document records the design decisions behind Evidence Navigator, so they can be reported, criticised and reproduced in a methods paper.
+This document records the design decisions behind Empirical Navigator, so they can be reported, criticised and reproduced in a methods paper.
 
 ## 1. Problem
 

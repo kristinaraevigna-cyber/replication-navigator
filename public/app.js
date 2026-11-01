@@ -1,4 +1,4 @@
-// Evidence Navigator — client app (no build step, no dependencies).
+// Empirical Navigator — client app (no build step, no dependencies).
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -539,9 +539,9 @@ function renderFinish() {
 function renderAbout() {
   $('#main').innerHTML = `
     <div class="eyebrow">About</div>
-    <h1>About Evidence Navigator</h1>
+    <h1>About Empirical Navigator</h1>
     <div class="card">
-      <p>Evidence Navigator is an open-source, evidence-grounded guide and AI coach for planning replication and reproduction studies. It was developed for the Open Science Management (OSM) summit pilot.</p>
+      <p>Empirical Navigator is an open-source, evidence-grounded guide and AI coach for planning replication and reproduction studies. It was developed for the Open Science Management (OSM) summit pilot.</p>
       <h3>How the coach is grounded</h3>
       <p>The coach may only use a curated evidence base of <strong>${K.cards.length} evidence cards</strong> drawn from ${K.sources.length} sources. Each card holds paraphrased guidance, a checklist action, and a short verbatim quote with its page number. A script checks automatically that every quote appears on the stated page. The coach must cite card ids, and the app flags any id that doesn't exist. Use the <a href="#" data-view="evidence">Evidence base</a> to browse everything the coach knows.</p>
       <h3>The process</h3>
@@ -777,7 +777,7 @@ $('#importFile').addEventListener('change', async (e) => {
     if (d.profile) { S.profile = d.profile; S.screened = true; }
     if (d.paper) S.paper = d.paper;
     save(); $('#settings').close(); render();
-  } catch { alert('That file is not an Evidence Navigator plan.'); }
+  } catch { alert('That file is not an Empirical Navigator plan.'); }
 });
 
 // ---------- global events ----------

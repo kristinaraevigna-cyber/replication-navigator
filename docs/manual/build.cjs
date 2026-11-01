@@ -1,4 +1,4 @@
-// Builds the participant manual (Word) from the Evidence Navigator knowledge base.
+// Builds the participant manual (Word) from the Empirical Navigator knowledge base.
 const fs = require('fs');
 const path = require('path');
 const {
@@ -71,11 +71,11 @@ const doc = [];
 
 // Cover
 doc.push(new Paragraph({ spacing: { before: 3200, after: 240, line: 240, lineRule: LineRuleType.AUTO }, children: [t(GENERAL ? 'USER GUIDE' : 'OSM SUMMIT 2026 · PARTICIPANT MANUAL', { color: ACCENT, bold: true, size: 20, characterSpacing: 40 })] }));
-doc.push(new Paragraph({ spacing: { after: 200, line: 240, lineRule: LineRuleType.AUTO }, children: [t('Evidence Navigator', { bold: true, size: 64, font: 'Georgia' })] }));
+doc.push(new Paragraph({ spacing: { after: 200, line: 240, lineRule: LineRuleType.AUTO }, children: [t('Empirical Navigator', { bold: true, size: 64, font: 'Georgia' })] }));
 doc.push(new Paragraph({ spacing: { after: 600 }, children: [t('User guide, replication handbook and resource pack', { size: 32, color: MUTED, font: 'Georgia' })] }));
 doc.push(box([
   ...(GENERAL ? [] : [P([t('App address:  ', { bold: true }), t('[insert app address]')])]),
-  P([t('No sign-in needed. ', { bold: true }), t(GENERAL ? 'Open Evidence Navigator in your browser, answer four quick questions and start. It is free and open access.' : 'Open the address (or scan the QR code), answer four quick questions and start.')], { spacing: { after: 0 } })
+  P([t('No sign-in needed. ', { bold: true }), t(GENERAL ? 'Open Empirical Navigator in your browser, answer four quick questions and start. It is free and open access.' : 'Open the address (or scan the QR code), answer four quick questions and start.')], { spacing: { after: 0 } })
 ], SOFT, GENERAL ? 'Getting started' : 'Keep this page handy'));
 doc.push(new Paragraph({ spacing: { before: 1400 }, children: [t('Version 0.2 · October 2026 · Built on 322 evidence cards drawn from nine key sources on replication', { color: MUTED, size: 18 })] }));
 
@@ -104,8 +104,8 @@ doc.push(box([
 ], WARN_SOFT, 'Three things to remember'));
 
 // 2. About
-doc.push(H1('2. What Evidence Navigator is'));
-doc.push(P('Evidence Navigator is a step-by-step guide and AI coach for planning a rigorous replication or reproduction study. It turns the best available guidance on replication into ten practical stages. Each stage has a worksheet, a checklist, resources and a coach. By the end you have a written replication plan that you can discuss with a supervisor, turn into a preregistration, or develop into a paper.'));
+doc.push(H1('2. What Empirical Navigator is'));
+doc.push(P('Empirical Navigator is a step-by-step guide and AI coach for planning a rigorous replication or reproduction study. It turns the best available guidance on replication into ten practical stages. Each stage has a worksheet, a checklist, resources and a coach. By the end you have a written replication plan that you can discuss with a supervisor, turn into a preregistration, or develop into a paper.'));
 doc.push(H2('Why an “evidence-grounded” coach?'));
 doc.push(P('General chatbots answer from everything they were trained on, so you cannot tell where their advice comes from. This coach is different: it may only use a curated evidence base of 322 evidence cards drawn from nine sources on replication, and it must cite the card behind every recommendation. Each card contains:'));
 doc.push(bullet([t('a short piece of guidance, ', { bold: true }), t('paraphrased in plain language;')]));
@@ -183,7 +183,7 @@ doc.push(rec('schwab2023-31'));
 
 if (GENERAL) {
 // 4. Ways to use it
-doc.push(H1('4. Ways to use Evidence Navigator'));
+doc.push(H1('4. Ways to use Empirical Navigator'));
 doc.push(P('Stages 1–9 take about 1½–2 hours in total. You do not have to do them in one sitting: your work is saved in your browser, so you can stop after any stage and come back on the same device.'));
 doc.push(table(['Situation', 'Suggested approach'], [
   ['On your own (e.g. a PhD student planning a replication)', 'Upload the paper you are replicating on Stage 1, then work through one or two stages per session. Use “Review my worksheet” before moving on, and take your exported plan to your supervisor at the expert check-points (stages 1, 6 and 9).'],
@@ -357,7 +357,7 @@ doc.push(table(['Resource', 'Use it for'], [
 
 // 9. Privacy
 doc.push(H1('9. Research participation and privacy'));
-doc.push(P(GENERAL ? 'Evidence Navigator is being evaluated for a methods paper. On the start screen you can tick a box to share your anonymous usage data. It is optional, and you can use every feature without it.' : 'We are evaluating Evidence Navigator for a methods paper. Taking part is optional, and you can use every feature without agreeing.'));
+doc.push(P(GENERAL ? 'Empirical Navigator is being evaluated for a methods paper. On the start screen you can tick a box to share your anonymous usage data. It is optional, and you can use every feature without it.' : 'We are evaluating Empirical Navigator for a methods paper. Taking part is optional, and you can use every feature without agreeing.'));
 doc.push(table(['', 'If you agree', 'If you do not agree'], [
   ['What is logged', 'A random ID, messages to and from the coach, checklist ticks, ratings, citations you open or flag, survey answers, and your exported plan', 'Nothing'],
   ['Where your work is saved', 'In your browser', 'In your browser'],
@@ -390,11 +390,11 @@ doc.push(H2('Frequently asked questions'));
   ['Is this only for quantitative studies?', 'The current evidence base is mostly about quantitative replication. Qualitative replication is on the list for future versions (see further reading in section 8).']
 ].forEach(([q, a]) => { doc.push(P([t(q, { bold: true })], { spacing: { after: 40 } })); doc.push(P(a)); });
 doc.push(spacer());
-doc.push(box([P('Evidence Navigator is open source. Cite it as: Shea, K. (2026). Evidence Navigator: an evidence-grounded guide and AI coach for planning replication studies (v0.1). https://github.com/kristinaraevigna-cyber/replication-navigator', { spacing: { after: 0 } })], SOFT, 'How to cite'));
+doc.push(box([P('Empirical Navigator is open source. Cite it as: Shea, K. (2026). Empirical Navigator: an evidence-grounded guide and AI coach for planning replication studies (v0.1). https://github.com/kristinaraevigna-cyber/replication-navigator', { spacing: { after: 0 } })], SOFT, 'How to cite'));
 
 // ---------- document ----------
 const document = new Document({
-  creator: 'Evidence Navigator', features: { updateFields: true }, title: `Evidence Navigator – ${DOC_NAME}`,
+  creator: 'Empirical Navigator', features: { updateFields: true }, title: `Empirical Navigator – ${DOC_NAME}`,
   styles: {
     default: { document: { run: { font: 'Calibri', size: 21 }, paragraph: { spacing: { line: 276, lineRule: LineRuleType.AUTO } } } },
     paragraphStyles: [
@@ -406,7 +406,7 @@ const document = new Document({
   numbering: { config: numberingConfigs },
   sections: [{
     properties: { page: { size: { width: PAGE_W, height: 16838 }, margin: { top: MARGIN, bottom: MARGIN, left: MARGIN, right: MARGIN } }, titlePage: true },
-    headers: { default: new Header({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [t(`Evidence Navigator · ${DOC_NAME}`, { color: MUTED, size: 16 })] })] }) },
+    headers: { default: new Header({ children: [new Paragraph({ alignment: AlignmentType.RIGHT, children: [t(`Empirical Navigator · ${DOC_NAME}`, { color: MUTED, size: 16 })] })] }) },
     footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [t('Page ', { color: MUTED, size: 16 }), new TextRun({ children: [PageNumber.CURRENT], color: MUTED, size: 16 })] })] }) },
     children: doc
   }]

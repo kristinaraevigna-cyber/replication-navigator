@@ -1,8 +1,8 @@
-# Evidence Navigator
+# Empirical Navigator
 
 **An evidence-grounded, step-by-step guide and AI coach for planning rigorous replication studies.**
 
-Evidence Navigator takes doctoral students and early-career researchers through ten stages of a replication or reproduction study, from choosing a target to publishing the results. Each stage has:
+Empirical Navigator takes doctoral students and early-career researchers through ten stages of a replication or reproduction study, from choosing a target to publishing the results. Each stage has:
 
 - a **worksheet** that builds up the student's replication plan,
 - a **checklist** in which every item is tied to published guidance,
@@ -15,7 +15,7 @@ The tool was built for the pilot at the Open Science Management (OSM) summit (40
 
 ## Why "evidence cards"?
 
-General-purpose chatbots answer from everything they were trained on, so their methodological advice can't be traced to a source. Evidence Navigator restricts the coach to **322 evidence cards** taken from nine key sources on replication. Each card contains:
+General-purpose chatbots answer from everything they were trained on, so their methodological advice can't be traced to a source. Empirical Navigator restricts the coach to **322 evidence cards** taken from nine key sources on replication. Each card contains:
 
 | field | purpose |
 |---|---|
